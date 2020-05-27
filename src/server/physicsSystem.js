@@ -1,4 +1,4 @@
-const FRICTION = 1.2;
+const FRICTION = .7;
 
 class PhysicsSystem { 
   constructor(entities) {
@@ -9,16 +9,20 @@ class PhysicsSystem {
     this.systemEntities.forEach(entity => {
       const physicsComponent = entity.components['Ph'];
 
-      // const { ax, ay } = physicsComponent;
+      const { vx, vy, ax, ay } = physicsComponent;
 
-      // physicsComponent.x += ax;
-      // physicsComponent.y += Math.floor((Math.random() * 3) - 1);
+      physicsComponent.x += vx;
+      physicsComponent.y += vy;
 
-      // physicsComponent.vx += ax;
-      // physicsComponent.vy += ay;
+      physicsComponent.vx += ax;
+      physicsComponent.vy += ay;
 //
-      // physicsComponent.vx *= FRICTION;
-      // physicsComponent.vy *= FRICTION;
+
+      physicsComponent.ax = 0;
+      physicsComponent.ay = 0;
+
+      physicsComponent.vx *= 0.9;
+      physicsComponent.vy *= 0.9;
     });
   }
 };

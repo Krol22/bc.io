@@ -1,3 +1,8 @@
+const MOVE_UP = 0;
+const MOVE_DOWN = 1;
+const MOVE_LEFT = 2;
+const MOVE_RIGHT = 3;
+
 class NetworkSystem {
   constructor(entities, room) {
     this.room = room;
@@ -6,18 +11,30 @@ class NetworkSystem {
     this.room.players.forEach(player => {
       const { socket } = player;
 
-      socket.on('CLIENT_UPDATE', (data) => {
-        const entity = this.entities.find(entity => entity.components['Network'].id === data.playerId)
-
-        console.log(data);
+      socket.on('CLIENT_EVENT', (({event, playerId}) => {
+        const entity = this.entities.find(entity => entity.components['Network'].id === playerId)
 
         if (!entity) {
           return;
         }
 
-        entity.components['Ph'].x = data.x;
-        entity.components['Ph'].y = data.y;
-      });
+        const physicsComponent = entity.components['Ph'];
+
+        switch(event) {
+          case MOVE_UP:
+            physicsComponent.ay = -4;
+            break;
+          case MOVE_DOWN:
+            physicsComponent.ay = 4;
+            break;
+          case MOVE_LEFT:
+            physicsComponent.ax = -4;
+            break;
+          case MOVE_RIGHT:
+            physicsComponent.ax = 4;
+            break;
+        }
+      }));
     })
   }
 
