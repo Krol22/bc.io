@@ -55,16 +55,16 @@ function connect() {
   window.addEventListener('keydown', (event) => {
     switch(event.key) {
       case 'ArrowUp':
-        socket.emit('CLIENT_EVENT', { event: MOVE_UP, playerId });
+        socket.emit('CLIENT_EVENT', { event: MOVE_UP });
         break;
       case 'ArrowDown':
-        socket.emit('CLIENT_EVENT', { event: MOVE_DOWN, playerId });
+        socket.emit('CLIENT_EVENT', { event: MOVE_DOWN });
         break;
       case 'ArrowLeft':
-        socket.emit('CLIENT_EVENT', { event: MOVE_LEFT, playerId });
+        socket.emit('CLIENT_EVENT', { event: MOVE_LEFT });
         break;
       case 'ArrowRight':
-        socket.emit('CLIENT_EVENT', { event: MOVE_RIGHT, playerId });
+        socket.emit('CLIENT_EVENT', { event: MOVE_RIGHT });
         break;
     }
   });

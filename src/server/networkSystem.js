@@ -9,10 +9,10 @@ class NetworkSystem {
     this.entities = entities;
 
     this.room.players.forEach(player => {
-      const { socket } = player;
+      const { id, socket } = player;
 
-      socket.on('CLIENT_EVENT', (({event, playerId}) => {
-        const entity = this.entities.find(entity => entity.components['Network'].id === playerId)
+      socket.on('CLIENT_EVENT', (({event}) => {
+        const entity = this.entities.find(entity => entity.components['Network'].id === id);
 
         if (!entity) {
           return;
