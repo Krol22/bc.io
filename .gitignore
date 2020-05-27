@@ -1,3 +1,6 @@
 node_modules/
 src/client/dist/
 src/client/.cache/
+dist/
+.cache/
+

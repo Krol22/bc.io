@@ -29,10 +29,14 @@ function connect() {
 
   socket.on('joined', data => {
     playerId = data.id;
+
+    document.querySelector('#message').innerHTML = 'Connected';
   });
 
   socket.on('player_disconnected', data => {
     console.log('disconnected');
+
+    document.querySelector('#message').innerHTML = 'Not connected';
   });
 
   socket.on('GAME_TICK', entities => {
