@@ -1,10 +1,5 @@
-const MOVE_UP = 0;
-const MOVE_DOWN = 1;
-const MOVE_LEFT = 2;
-const MOVE_RIGHT = 3;
-
 class NetworkSystem {
-  constructor(entities, room) {
+  constructor(entities, room, systems) {
     this.room = room;
     this.entities = entities;
 
@@ -18,27 +13,16 @@ class NetworkSystem {
           return;
         }
 
-        const physicsComponent = entity.components['Ph'];
+        const systemsWithNetworkActions = systems.filter(system => {
+          return !!system.networkActions[event];
+        });
 
-        switch(event) {
-          case MOVE_UP:
-            physicsComponent.ay = -4;
-            break;
-          case MOVE_DOWN:
-            physicsComponent.ay = 4;
-            break;
-          case MOVE_LEFT:
-            physicsComponent.ax = -4;
-            break;
-          case MOVE_RIGHT:
-            physicsComponent.ax = 4;
-            break;
-        }
+        systemsWithNetworkActions.forEach(system => system.networkActions[event](entity));
       }));
     })
   }
 
-  update() {
+  sendClientInfo() {
     this.room.players.forEach(player => {
       const { socket, roomId } = player;
 

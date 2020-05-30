@@ -31,23 +31,17 @@ class Game {
       this.entities.push(
         new Entity([new PhysicsComponent(0, 0), new NetworkComponent(id)]),
       );
-
-      socket.on('event', data => {});
     });
 
     const physicsSystem = new PhysicsSystem(this.entities);
-    this.networkSystem = new NetworkSystem(this.entities, room);
+    this.networkSystem = new NetworkSystem(this.entities, room, [physicsSystem]);
     
     this.ecs = new ECS([physicsSystem]);
-
-    console.log(this.ecs);
   }
 
   loop() {
-    // async - loop through ECS,
     this.ecs.update();
-
-    this.networkSystem.update();
+    this.networkSystem.sendClientInfo();
   }
 }
 

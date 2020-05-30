@@ -1,11 +1,8 @@
 import io from 'socket.io-client';
+import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } from '../common/networkActions';
 
-let playerId = -1;
-
-const MOVE_UP = 0;
-const MOVE_DOWN = 1;
-const MOVE_LEFT = 2;
-const MOVE_RIGHT = 3;
+let playerId;
+let socket;
 
 function makeId(length) {
   let result = '';
@@ -30,7 +27,7 @@ function connect() {
 
   const address = `http://localhost:3000/?room=${roomId}`;
 
-  const socket = io(address);
+  socket = io(address);
 
   socket.on('joined', data => {
     playerId = data.id;
@@ -51,23 +48,24 @@ function connect() {
       element.style.left = entity.components['Ph'].x + 'px';
     });
   });
-
-  window.addEventListener('keydown', (event) => {
-    switch(event.key) {
-      case 'ArrowUp':
-        socket.emit('CLIENT_EVENT', { event: MOVE_UP });
-        break;
-      case 'ArrowDown':
-        socket.emit('CLIENT_EVENT', { event: MOVE_DOWN });
-        break;
-      case 'ArrowLeft':
-        socket.emit('CLIENT_EVENT', { event: MOVE_LEFT });
-        break;
-      case 'ArrowRight':
-        socket.emit('CLIENT_EVENT', { event: MOVE_RIGHT });
-        break;
-    }
-  });
 }
 
 connect();
+
+window.addEventListener('keydown', (event) => {
+  console.log(event);
+  switch(event.key) {
+    case 'w':
+      socket.emit('CLIENT_EVENT', { event: MOVE_UP });
+      break;
+    case 's':
+      socket.emit('CLIENT_EVENT', { event: MOVE_DOWN });
+      break;
+    case 'a':
+      socket.emit('CLIENT_EVENT', { event: MOVE_LEFT });
+      break;
+    case 'd':
+      socket.emit('CLIENT_EVENT', { event: MOVE_RIGHT });
+      break;
+  }
+});
