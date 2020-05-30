@@ -1,8 +1,17 @@
 import io from 'socket.io-client';
+import InputManager from './inputManager';
+
 import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } from '../common/networkActions';
 
 let playerId;
 let socket;
+let inputManager;
+
+const LEFT = 37;
+const UP = 38;
+const RIGHT = 39;
+const DOWN = 40;
+const SPACE = 32;
 
 function makeId(length) {
   let result = '';
@@ -48,24 +57,26 @@ function connect() {
       element.style.left = entity.components['Ph'].x + 'px';
     });
   });
+
+  inputManager = new InputManager();
+
+}
+
+function loop() {
+  inputManager.update();
+
+  if (inputManager.keys[LEFT].isDown) {
+    socket.emit('CLIENT_EVENT', { event: MOVE_LEFT });
+  } else if (inputManager.keys[RIGHT].isDown) {
+    socket.emit('CLIENT_EVENT', { event: MOVE_RIGHT });
+  } else if (inputManager.keys[UP].isDown) {
+    socket.emit('CLIENT_EVENT', { event: MOVE_UP });
+  } else if (inputManager.keys[DOWN].isDown) {
+    socket.emit('CLIENT_EVENT', { event: MOVE_DOWN });
+  }
+
+  window.requestAnimationFrame(loop);
 }
 
 connect();
-
-window.addEventListener('keydown', (event) => {
-  console.log(event);
-  switch(event.key) {
-    case 'w':
-      socket.emit('CLIENT_EVENT', { event: MOVE_UP });
-      break;
-    case 's':
-      socket.emit('CLIENT_EVENT', { event: MOVE_DOWN });
-      break;
-    case 'a':
-      socket.emit('CLIENT_EVENT', { event: MOVE_LEFT });
-      break;
-    case 'd':
-      socket.emit('CLIENT_EVENT', { event: MOVE_RIGHT });
-      break;
-  }
-});
+loop();

@@ -1,4 +1,5 @@
-const { ECS, Entity } = require('./ecs');
+const { ECS, Entity } = require('../common/engine/ecs');
+
 const PhysicsSystem = require('./physicsSystem');
 const NetworkSystem = require('./networkSystem');
 
