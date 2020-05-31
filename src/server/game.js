@@ -1,26 +1,16 @@
-const { ECS, Entity } = require('../common/engine/ecs');
+const { ECS, EcsEntity } = require('@krol22/paula');
 const GameLoop = require('../common/engine/GameLoop');
 
-const PhysicsSystem = require('./physicsSystem');
-const NetworkSystem = require('./networkSystem');
+const PhysicsSystem = require('./systems/physicsSystem');
+const NetworkSystem = require('./systems/networkSystem');
+
+const PhysicsComponent = require('../common/components/physics');
 
 const serverGameLoop = new GameLoop(30);
 
-class PhysicsComponent {
-  constructor(x = 0, y = 0) {
-    this.n = 'Ph';
-    this.x = x;
-    this.y = y;
-    this.vx = 0;
-    this.vy = 0;
-    this.ax = 0;
-    this.ay = 0;
-  }
-}
-
 class NetworkComponent {
   constructor(id) {
-    this.n = 'Network';
+    this._type = 'Network';
     this.id = id;
   }
 }
@@ -29,19 +19,18 @@ class Game {
   constructor(room) {
     this.entities = [];
     this.networkEntities = [];
+    this.ecs = new ECS();
 
-    // async - listen on clients events/actions input,
-    room.players.forEach(({ id, socket }) => {
-      this.entities.push(
-        new Entity([new PhysicsComponent(0, 0), new NetworkComponent(id)]),
-      );
+    room.players.forEach(({ id }) => {
+      const newEntity = new EcsEntity([new PhysicsComponent(0, 0), new NetworkComponent(id)]);
+      this.entities.push(newEntity);
+      this.ecs.addEntity(newEntity);
     });
 
     const physicsSystem = new PhysicsSystem(this.entities);
     this.networkSystem = new NetworkSystem(this.entities, room, [physicsSystem]);
-    
-    this.ecs = new ECS([physicsSystem]);
-    console.log(this);
+
+    this.ecs.addSystem(physicsSystem);
   }
 
   loop() {

@@ -56,8 +56,9 @@ function connect() {
   socket.on('GAME_TICK', entities => {
     entities.forEach((entity, index) => {
       const element = document.querySelector(`#entity_${index}`);
-      element.style.top = entity.components['Ph'].y + 'px';
-      element.style.left = entity.components['Ph'].x + 'px';
+      const physicsComponent = entity.components.find(({ _type }) => _type === 'PHYSICS');
+      element.style.top = physicsComponent.y + 'px';
+      element.style.left = physicsComponent.x + 'px';
     });
   });
 

@@ -1,6 +1,9 @@
-class PhysicsComponent {
+const { EcsComponent } = require('@krol22/paula');
+
+class PhysicsComponent extends EcsComponent {
   constructor(x = 0, y = 0) {
-    this.n = 'Ph';
+    super('PHYSICS');
+
     this.x = x;
     this.y = y;
     this.vx = 0;

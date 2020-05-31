@@ -1,3 +1,5 @@
+const { EcsSystem } = require('@krol22/paula');
+
 class NetworkSystem {
   constructor(entities, room, systems) {
     this.room = room;
@@ -7,7 +9,7 @@ class NetworkSystem {
       const { id, socket } = player;
 
       socket.on('CLIENT_EVENT', (({event}) => {
-        const entity = this.entities.find(entity => entity.components['Network'].id === id);
+        const entity = this.entities.find(entity => entity.getComponent('Network').id === id);
 
         if (!entity) {
           return;

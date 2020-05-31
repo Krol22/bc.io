@@ -1,31 +1,34 @@
-const { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } = require('../common/networkActions');
+const { EcsSystem } = require('@krol22/paula');
 
-class PhysicsSystem { 
+const { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } = require('../../common/networkActions');
+
+class PhysicsSystem extends EcsSystem { 
   constructor(entities) {
-    this.systemEntities = entities.filter(entity => entity.componentTypes.includes('Ph'));
+    super(['PHYSICS']);
+
     this.networkActions = {
       [MOVE_UP]: entity => {
-        const physicsComponent = entity.components['Ph'];
+        const physicsComponent = entity.getComponent('PHYSICS');
         physicsComponent.ay = -4;
       },
       [MOVE_DOWN]: entity => {
-        const physicsComponent = entity.components['Ph'];
+        const physicsComponent = entity.getComponent('PHYSICS');
         physicsComponent.ay = 4;
       },
       [MOVE_LEFT]: entity => {
-        const physicsComponent = entity.components['Ph'];
+        const physicsComponent = entity.getComponent('PHYSICS');
         physicsComponent.ax = -4;
       },
       [MOVE_RIGHT]: entity => {
-        const physicsComponent = entity.components['Ph'];
+        const physicsComponent = entity.getComponent('PHYSICS');
         physicsComponent.ax = 4;
       }
     };
   }
 
-  update() {
+  tick(delta) {
     this.systemEntities.forEach(entity => {
-      const physicsComponent = entity.components['Ph'];
+      const physicsComponent = entity.getComponent('PHYSICS');
 
       const { vx, vy, ax, ay } = physicsComponent;
 
