@@ -21,13 +21,14 @@ class Game {
     this.networkEntities = [];
     this.ecs = new ECS();
 
+    const physicsSystem = new PhysicsSystem();
+
     room.players.forEach(({ id }) => {
       const newEntity = new EcsEntity([new PhysicsComponent(0, 0), new NetworkComponent(id)]);
       this.entities.push(newEntity);
       this.ecs.addEntity(newEntity);
     });
 
-    const physicsSystem = new PhysicsSystem(this.entities);
     this.networkSystem = new NetworkSystem(this.entities, room, [physicsSystem]);
 
     this.ecs.addSystem(physicsSystem);

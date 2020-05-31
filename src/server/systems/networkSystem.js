@@ -9,6 +9,7 @@ class NetworkSystem {
       const { id, socket } = player;
 
       socket.on('CLIENT_EVENT', (({event}) => {
+        console.log(event);
         const entity = this.entities.find(entity => entity.getComponent('Network').id === id);
 
         if (!entity) {
