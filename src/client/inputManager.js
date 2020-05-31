@@ -29,7 +29,7 @@ class InputManager {
         continue;
       }
 
-      this.keys[i].isPressed = this.keys[i].isDown === this.keys[prevIsDown];
+      this.keys[i].isPressed = this.keys[i].isDown === this.keys[i].prevIsDown;
       this.keys[i].prevIsDown = this.keys[i].isDown;
     }
   }

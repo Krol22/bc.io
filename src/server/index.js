@@ -38,7 +38,10 @@ io.on('connection', socket => {
   socket.emit('joined', { id: randomPlayerId });
 
   if (rooms[roomId].players.length == 2) {
-    games.push(new Game(rooms[roomId]));
+    const newGame = new Game(rooms[roomId]);
+
+    newGame.start();
+    games.push(newGame);
   }
 
   socket.on('disconnect', () => {
@@ -47,7 +50,3 @@ io.on('connection', socket => {
     io.to(roomId).emit('player_disconnected', { id: randomPlayerId });
   });
 });
-
-setInterval(() => {
-  games.forEach(game => game.loop());
-}, 10)

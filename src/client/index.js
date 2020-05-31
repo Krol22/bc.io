@@ -1,5 +1,6 @@
 import io from 'socket.io-client';
 import InputManager from './inputManager';
+import GameLoop from '../common/engine/GameLoop';
 
 import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } from '../common/networkActions';
 
@@ -12,6 +13,8 @@ const UP = 38;
 const RIGHT = 39;
 const DOWN = 40;
 const SPACE = 32;
+
+const clientGameLoop = new GameLoop(60);
 
 function makeId(length) {
   let result = '';
@@ -74,9 +77,7 @@ function loop() {
   } else if (inputManager.keys[DOWN].isDown) {
     socket.emit('CLIENT_EVENT', { event: MOVE_DOWN });
   }
-
-  window.requestAnimationFrame(loop);
 }
 
 connect();
-loop();
+clientGameLoop.start(loop);

@@ -1,7 +1,10 @@
 const { ECS, Entity } = require('../common/engine/ecs');
+const GameLoop = require('../common/engine/GameLoop');
 
 const PhysicsSystem = require('./physicsSystem');
 const NetworkSystem = require('./networkSystem');
+
+const serverGameLoop = new GameLoop(30);
 
 class PhysicsComponent {
   constructor(x = 0, y = 0) {
@@ -38,11 +41,16 @@ class Game {
     this.networkSystem = new NetworkSystem(this.entities, room, [physicsSystem]);
     
     this.ecs = new ECS([physicsSystem]);
+    console.log(this);
   }
 
   loop() {
     this.ecs.update();
     this.networkSystem.sendClientInfo();
+  }
+
+  start() {
+    serverGameLoop.start(this.loop.bind(this));
   }
 }
 
