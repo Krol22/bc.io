@@ -35,7 +35,7 @@ io.on('connection', socket => {
 
   console.log(Object.keys(rooms).map(room => `${room} ${rooms[room].players.map(player => player.id)}`));
 
-  socket.emit('joined', { id: randomPlayerId });
+  socket.emit('PLAYER_JOINED', { id: randomPlayerId });
 
   if (rooms[roomId].players.length == 2) {
     const newGame = new Game(rooms[roomId]);
@@ -47,6 +47,6 @@ io.on('connection', socket => {
   socket.on('disconnect', () => {
     // console.log(randomPlayerId);
     rooms[roomId].players = [...rooms[roomId].players.filter(({id}) => id !== randomPlayerId)];
-    io.to(roomId).emit('player_disconnected', { id: randomPlayerId });
+    io.to(roomId).emit('PLAYER_DISCONNECTED', { id: randomPlayerId });
   });
 });

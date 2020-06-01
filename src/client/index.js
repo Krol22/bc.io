@@ -1,8 +1,14 @@
+import "regenerator-runtime/runtime";
+
 import io from 'socket.io-client';
+import { ECS, EcsEntity } from '@krol22/paula';
+
 import InputManager from './inputManager';
 import GameLoop from '../common/engine/GameLoop';
 
 import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } from '../common/networkActions';
+
+import sprite from './assets/tanks.png';
 
 let playerId;
 let socket;
@@ -15,6 +21,27 @@ const DOWN = 40;
 const SPACE = 32;
 
 const clientGameLoop = new GameLoop(60);
+const ecs = new ECS();
+
+class NetworkComponent {
+  constructor(id) {
+    this._type = 'Network';
+    this.id = id;
+  }
+}
+
+class PhysicsComponent {
+  constructor(x = 0, y = 0) {
+    this._type = 'PHYSICS';
+
+    this.x = x;
+    this.y = y;
+    this.vx = 0;
+    this.vy = 0;
+    this.ax = 0;
+    this.ay = 0;
+  }
+}
 
 function makeId(length) {
   let result = '';
@@ -53,17 +80,61 @@ function connect() {
     document.querySelector('#message').innerHTML = 'Not connected';
   });
 
-  socket.on('GAME_TICK', entities => {
-    entities.forEach((entity, index) => {
-      const element = document.querySelector(`#entity_${index}`);
-      const physicsComponent = entity.components.find(({ _type }) => _type === 'PHYSICS');
+  socket.on('PLAYER_JOINED', ({ id }) => {
+    const newEntity = new EcsEntity([
+      new PhysicsComponent(0, 0),
+      new NetworkComponent(id)],
+    );
+    ecs.addEntity(newEntity);
+
+    console.log(newEntity);
+  });
+
+  socket.on('PLAYER_DISCONNECTED', ({ id }) => {
+    const clientEntity = ecs.__getEntities().find((entity) => entity.getComponent('Network').id === id);
+    ecs.removeEntity(clientEntity.id);
+  });
+
+  socket.on('GAME_TICK', serverEntities => {
+    serverEntities.forEach(serverEntity => {
+      const networkId = serverEntity.components.find(({ _type }) => _type === 'Network').id;
+      const serverPhysicsComponent = serverEntity.components.find(({ _type }) => _type === 'PHYSICS');
+
+      // Should be officialy supported
+      const clientEntity = ecs.__getEntities().find((entity) => entity.getComponent('Network').id === networkId);
+      
+      if (!clientEntity) {
+        console.log('bug!');
+        return;
+      }
+
+      const physicsComponent = clientEntity.getComponent('PHYSICS');
+
+      physicsComponent.x = serverPhysicsComponent.x;
+      physicsComponent.y = serverPhysicsComponent.y;
+
+      const element = document.querySelector('#entity_1');
+
       element.style.top = physicsComponent.y + 'px';
       element.style.left = physicsComponent.x + 'px';
     });
   });
 
   inputManager = new InputManager();
+}
 
+const loadAsset = (imageSrc, isAudio) => {
+  return new Promise(resolve => {
+    const asset = isAudio ? new Audio() : new Image();
+    asset.src = imageSrc;
+    asset.onload = () => {
+      resolve(asset);
+    }
+
+    asset.onerror = e => {
+      console.log(e);
+    }
+  });
 }
 
 function loop() {
@@ -78,7 +149,14 @@ function loop() {
   } else if (inputManager.keys[DOWN].isDown) {
     socket.emit('CLIENT_EVENT', { event: MOVE_DOWN });
   }
+
+  ecs.update();
 }
 
-connect();
-clientGameLoop.start(loop);
+const start = async () => {
+  window.assets.sprite = await loadAsset('assets/tanks.png');
+  connect();
+  clientGameLoop.start(loop);
+}
+
+start();

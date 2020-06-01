@@ -3,7 +3,7 @@ const { EcsSystem } = require('@krol22/paula');
 const { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } = require('../../common/networkActions');
 
 class PhysicsSystem extends EcsSystem { 
-  constructor(entities) {
+  constructor() {
     super(['PHYSICS']);
 
     this.networkActions = {
