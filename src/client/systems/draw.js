@@ -2,7 +2,12 @@ import { EcsSystem } from '@krol22/paula';
 
 class DrawSystem extends EcsSystem {
   constructor(context) {
+    console.log('est123');
     super(['DRAW']);
+
+    console.log('est123');
+
+    this.context = context;
   }
 
   tick(delta) {
@@ -39,7 +44,7 @@ class DrawSystem extends EcsSystem {
 
       this.context.restore();
     });
-
-
   }
-}
+};
+
+export default DrawSystem;

@@ -5,6 +5,7 @@ import { ECS, EcsEntity } from '@krol22/paula';
 
 import InputManager from './inputManager';
 import GameLoop from '../common/engine/GameLoop';
+import DrawSystem from './systems/draw';
 
 import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } from '../common/networkActions';
 
@@ -23,6 +24,14 @@ const SPACE = 32;
 const clientGameLoop = new GameLoop(60);
 const ecs = new ECS();
 
+const canvas = document.querySelector('#canvas');
+
+console.log(DrawSystem);
+
+const system = new DrawSystem();
+
+ecs.addSystem(system);
+
 class NetworkComponent {
   constructor(id) {
     this._type = 'Network';
@@ -40,6 +49,19 @@ class PhysicsComponent {
     this.vy = 0;
     this.ax = 0;
     this.ay = 0;
+  }
+}
+
+class DrawComponent {
+  constructor(x, y, width, height, image) {
+    this._type = 'DRAW';
+
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+
+    this.image = image;
   }
 }
 
@@ -81,10 +103,12 @@ function connect() {
   });
 
   socket.on('PLAYER_JOINED', ({ id }) => {
+    console.log(`Player ${id} has joined.`);
     const newEntity = new EcsEntity([
       new PhysicsComponent(0, 0),
-      new NetworkComponent(id)],
-    );
+      new NetworkComponent(id),
+      new DrawComponent(0, 0, 16, 16, window.assets.sprite),
+    ]);
     ecs.addEntity(newEntity);
 
     console.log(newEntity);
@@ -154,7 +178,8 @@ function loop() {
 }
 
 const start = async () => {
-  window.assets.sprite = await loadAsset('assets/tanks.png');
+  window.assets = {};
+  window.assets.sprite = await loadAsset(sprite);
   connect();
   clientGameLoop.start(loop);
 }
