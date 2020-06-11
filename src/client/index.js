@@ -1,17 +1,19 @@
 import "regenerator-runtime/runtime";
 
 import io from 'socket.io-client';
-import { ECS, EcsEntity } from '@krol22/paula';
+import { ECS, EcsEntity } from '@krol22/ecs';
 
 import InputManager from './inputManager';
 import GameLoop from '../common/engine/GameLoop';
 import DrawSystem from './systems/draw';
 
+import DrawComponent from '../common/components/draw';
+import NetworkComponent from '../common/components/network';
+
 import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } from '../common/networkActions';
 
 import sprite from './assets/tanks.png';
 
-let playerId;
 let socket;
 let inputManager;
 
@@ -19,51 +21,14 @@ const LEFT = 37;
 const UP = 38;
 const RIGHT = 39;
 const DOWN = 40;
-const SPACE = 32;
 
 const clientGameLoop = new GameLoop(60);
 const ecs = new ECS();
 
 const canvas = document.querySelector('#canvas');
-
-console.log(DrawSystem);
-
-const system = new DrawSystem();
+const system = new DrawSystem(canvas.getContext('2d'));
 
 ecs.addSystem(system);
-
-class NetworkComponent {
-  constructor(id) {
-    this._type = 'Network';
-    this.id = id;
-  }
-}
-
-class PhysicsComponent {
-  constructor(x = 0, y = 0) {
-    this._type = 'PHYSICS';
-
-    this.x = x;
-    this.y = y;
-    this.vx = 0;
-    this.vy = 0;
-    this.ax = 0;
-    this.ay = 0;
-  }
-}
-
-class DrawComponent {
-  constructor(x, y, width, height, image) {
-    this._type = 'DRAW';
-
-    this.x = x;
-    this.y = y;
-    this.width = width;
-    this.height = height;
-
-    this.image = image;
-  }
-}
 
 function makeId(length) {
   let result = '';
@@ -90,57 +55,54 @@ function connect() {
 
   socket = io(address);
 
-  socket.on('joined', data => {
-    playerId = data.id;
-
-    document.querySelector('#message').innerHTML = 'Connected';
-  });
-
-  socket.on('player_disconnected', data => {
-    console.log('disconnected');
-
-    document.querySelector('#message').innerHTML = 'Not connected';
-  });
-
-  socket.on('PLAYER_JOINED', ({ id }) => {
-    console.log(`Player ${id} has joined.`);
-    const newEntity = new EcsEntity([
-      new PhysicsComponent(0, 0),
-      new NetworkComponent(id),
-      new DrawComponent(0, 0, 16, 16, window.assets.sprite),
-    ]);
-    ecs.addEntity(newEntity);
-
-    console.log(newEntity);
+  socket.on('PLAYER_JOINED', ({ players }) => {
+    players.forEach(({ id }) => {
+      const newEntity = new EcsEntity([
+        new NetworkComponent(id),
+        new DrawComponent(0, 0, 32, 32, window.assets.sprite),
+      ]);
+      ecs.addEntity(newEntity);
+    })
   });
 
   socket.on('PLAYER_DISCONNECTED', ({ id }) => {
-    const clientEntity = ecs.__getEntities().find((entity) => entity.getComponent('Network').id === id);
+    const clientEntity = ecs.__getEntities().find((entity) => entity.getComponent('NETWORK').id === id);
     ecs.removeEntity(clientEntity.id);
   });
 
   socket.on('GAME_TICK', serverEntities => {
     serverEntities.forEach(serverEntity => {
-      const networkId = serverEntity.components.find(({ _type }) => _type === 'Network').id;
+      const networkId = serverEntity.components.find(({ _type }) => _type === 'NETWORK').id;
       const serverPhysicsComponent = serverEntity.components.find(({ _type }) => _type === 'PHYSICS');
 
-      // Should be officialy supported
-      const clientEntity = ecs.__getEntities().find((entity) => entity.getComponent('Network').id === networkId);
+      const clientEntity = ecs.__getEntities().find((entity) => entity.getComponent('NETWORK').id === networkId);
       
       if (!clientEntity) {
-        console.log('bug!');
         return;
       }
 
-      const physicsComponent = clientEntity.getComponent('PHYSICS');
+      const drawComponent = clientEntity.getComponent('DRAW');
 
-      physicsComponent.x = serverPhysicsComponent.x;
-      physicsComponent.y = serverPhysicsComponent.y;
+      drawComponent.x = serverPhysicsComponent.x;
+      drawComponent.y = serverPhysicsComponent.y;
 
-      const element = document.querySelector('#entity_1');
+      const { vx, vy } = serverPhysicsComponent;
 
-      element.style.top = physicsComponent.y + 'px';
-      element.style.left = physicsComponent.x + 'px';
+      if (vy < 0) {
+        drawComponent.dir = 0;
+      }
+
+      if (vy > 0) {
+        drawComponent.dir = 2;
+      }
+
+      if (vx > 0) {
+        drawComponent.dir = 1;
+      }
+
+      if (vx < 0) {
+        drawComponent.dir = 3;
+      }
     });
   });
 

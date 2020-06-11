@@ -1,35 +1,37 @@
-const { EcsSystem } = require('@krol22/paula');
-
 class NetworkSystem {
-  constructor(entities, room, systems) {
-    this.room = room;
+  constructor(entities, systems) {
     this.entities = entities;
+    this.systems = systems;
 
-    this.room.players.forEach(player => {
-      const { id, socket } = player;
-
-      socket.on('CLIENT_EVENT', (({event}) => {
-        const entity = this.entities.find(entity => entity.getComponent('Network').id === id);
-
-        if (!entity) {
-          return;
-        }
-
-        const systemsWithNetworkActions = systems.filter(system => {
-          return !!system.networkActions[event];
-        });
-
-        systemsWithNetworkActions.forEach(system => system.networkActions[event](entity));
-      }));
-    })
+    this.players = [];
   }
 
   sendClientInfo() {
-    this.room.players.forEach(player => {
-      const { socket, roomId } = player;
+    this.players.forEach(player => {
+      const { socket } = player;
 
       socket.emit('GAME_TICK', this.entities);
     });
+  }
+
+  addPlayer(newPlayer) {
+    const { id, socket } = newPlayer;
+
+    this.players.push(newPlayer);
+
+    socket.on('CLIENT_EVENT', (({event}) => {
+      const entity = this.entities.find(entity => entity.getComponent('NETWORK').id === id);
+
+      if (!entity) {
+        return;
+      }
+
+      const systemsWithNetworkActions = this.systems.filter(system => {
+        return !!system.networkActions[event];
+      });
+
+      systemsWithNetworkActions.forEach(system => system.networkActions[event](entity));
+    }));
   }
 }
 

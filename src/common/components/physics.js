@@ -1,4 +1,4 @@
-const { EcsComponent } = require('@krol22/paula');
+const { EcsComponent } = require('@krol22/ecs');
 
 class PhysicsComponent extends EcsComponent {
   constructor(x = 0, y = 0) {

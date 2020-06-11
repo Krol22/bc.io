@@ -24,29 +24,38 @@ io.on('connection', socket => {
       id: roomId,
       players: [],
     };
+
+    rooms[roomId].game = new Game(rooms[roomId]);
   }
 
-  rooms[roomId].players.push({
+  const newPlayer = {
     id: randomPlayerId,
     socket,
-  });
+  };
+
+  rooms[roomId].players.push(newPlayer);
 
   socket.join(roomId);
 
+  rooms[roomId].game.addPlayer(newPlayer);
+
   console.log(Object.keys(rooms).map(room => `${room} ${rooms[room].players.map(player => player.id)}`));
 
-  socket.emit('PLAYER_JOINED', { id: randomPlayerId });
+  const connectedPlayers = rooms[roomId].players.map(player => ({ id: player.id }));
 
-  if (rooms[roomId].players.length == 2) {
-    const newGame = new Game(rooms[roomId]);
+  socket.emit('PLAYER_JOINED', { id: randomPlayerId, players: connectedPlayers });
+  io.to(roomId).emit('PLAYER_JOINED', { id: randomPlayerId, players: connectedPlayers });
 
-    newGame.start();
-    games.push(newGame);
-  }
 
   socket.on('disconnect', () => {
-    // console.log(randomPlayerId);
     rooms[roomId].players = [...rooms[roomId].players.filter(({id}) => id !== randomPlayerId)];
     io.to(roomId).emit('PLAYER_DISCONNECTED', { id: randomPlayerId });
   });
 });
+
+setInterval(() => {
+  Object.keys(rooms).forEach(key => {
+    const { game } = rooms[key];
+    game.loop();
+  });
+}, 10);

@@ -1,4 +1,4 @@
-import { EcsSystem } from '@krol22/paula';
+import { EcsSystem } from '@krol22/ecs';
 
 class DrawSystem extends EcsSystem {
   constructor(context) {
@@ -11,6 +11,8 @@ class DrawSystem extends EcsSystem {
   }
 
   tick(delta) {
+    this.context.fillRect(0, 0, 1000, 1000);
+
     this.systemEntities.forEach(entity => {
       const drawComponent = entity.getComponent('DRAW');
 
@@ -19,13 +21,17 @@ class DrawSystem extends EcsSystem {
       const frameHeight = 16;
 
       const {
-        x, y, width, height, image
+        x, y, width, height, image, dir
       } = drawComponent;
 
       if (!entity.hasComponent('ANIMATION')) {
         // draw just image,
         this.context.save();
         this.context.translate(x, y);
+
+        this.context.translate(width / 2, height / 2);
+        this.context.rotate((Math.PI / 2) * dir);
+        this.context.translate(-width / 2, -height / 2);
 
         this.context.drawImage(image, 0, 0, frameWidth, frameHeight, 0, 0, width, height);
 

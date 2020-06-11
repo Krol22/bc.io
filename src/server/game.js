@@ -1,37 +1,37 @@
-const { ECS, EcsEntity } = require('@krol22/paula');
+const { ECS, EcsEntity } = require('@krol22/ecs');
 const GameLoop = require('../common/engine/GameLoop');
 
 const PhysicsSystem = require('./systems/physicsSystem');
 const NetworkSystem = require('./systems/networkSystem');
 
+const NetworkComponent = require('../common/components/network');
 const PhysicsComponent = require('../common/components/physics');
 
 const serverGameLoop = new GameLoop(30);
 
-class NetworkComponent {
-  constructor(id) {
-    this._type = 'Network';
-    this.id = id;
-  }
-}
-
 class Game {
-  constructor(room) {
+  constructor() {
     this.entities = [];
     this.networkEntities = [];
     this.ecs = new ECS();
 
     const physicsSystem = new PhysicsSystem();
 
-    room.players.forEach(({ id }) => {
-      const newEntity = new EcsEntity([new PhysicsComponent(0, 0), new NetworkComponent(id)]);
-      this.entities.push(newEntity);
-      this.ecs.addEntity(newEntity);
-    });
-
-    this.networkSystem = new NetworkSystem(this.entities, room, [physicsSystem]);
+    this.networkSystem = new NetworkSystem(this.entities, [physicsSystem]);
 
     this.ecs.addSystem(physicsSystem);
+    console.log(this.ecs);
+  }
+
+  addPlayer(newPlayer) {
+    const newEntity = new EcsEntity([new PhysicsComponent(0, 0), new NetworkComponent(newPlayer.id)]);
+    this.entities.push(newEntity);
+    this.ecs.addEntity(newEntity);
+
+    this.networkSystem.addPlayer(newPlayer);
+  }
+
+  removePlayer(playerId) {
   }
 
   loop() {

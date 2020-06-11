@@ -1,4 +1,4 @@
-const { EcsComponent } = require('@krol22/paula');
+const { EcsComponent } = require('@krol22/ecs');
 
 class AnimationComponent extends EcsComponent {
   constructor(currentFrame, name, animations) {

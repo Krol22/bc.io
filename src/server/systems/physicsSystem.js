@@ -1,4 +1,4 @@
-const { EcsSystem } = require('@krol22/paula');
+const { EcsSystem } = require('@krol22/ecs');
 
 const { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } = require('../../common/networkActions');
 
@@ -9,20 +9,24 @@ class PhysicsSystem extends EcsSystem {
     this.networkActions = {
       [MOVE_UP]: entity => {
         const physicsComponent = entity.getComponent('PHYSICS');
-        physicsComponent.ay = -4;
+        physicsComponent.vx = 0;
+        physicsComponent.ay = -0.4;
       },
       [MOVE_DOWN]: entity => {
         const physicsComponent = entity.getComponent('PHYSICS');
-        physicsComponent.ay = 4;
+        physicsComponent.vx = 0;
+        physicsComponent.ay = .4;
       },
       [MOVE_LEFT]: entity => {
         const physicsComponent = entity.getComponent('PHYSICS');
-        physicsComponent.ax = -4;
+        physicsComponent.vy = 0;
+        physicsComponent.ax = -.4;
       },
       [MOVE_RIGHT]: entity => {
         const physicsComponent = entity.getComponent('PHYSICS');
-        physicsComponent.ax = 4;
-      }
+        physicsComponent.vy = 0;
+        physicsComponent.ax = .4;
+      },
     };
   }
 
@@ -38,11 +42,11 @@ class PhysicsSystem extends EcsSystem {
       physicsComponent.vx += ax;
       physicsComponent.vy += ay;
 
-      physicsComponent.ax = 0;
-      physicsComponent.ay = 0;
-
       physicsComponent.vx *= 0.9;
       physicsComponent.vy *= 0.9;
+
+      physicsComponent.ax = 0;
+      physicsComponent.ay = 0;
     });
   }
 };

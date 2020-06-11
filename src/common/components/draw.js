@@ -1,4 +1,4 @@
-const { EcsComponent } = require('@krol22/paula');
+const { EcsComponent } = require('@krol22/ecs');
 
 class DrawComponent extends EcsComponent {
   constructor(x, y, width, height, image) {
@@ -8,6 +8,8 @@ class DrawComponent extends EcsComponent {
     this.y = y;
     this.width = width;
     this.height = height;
+
+    this.dir = 0;
 
     this.image = image;
   }
