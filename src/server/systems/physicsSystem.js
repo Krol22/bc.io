@@ -36,11 +36,11 @@ class PhysicsSystem extends EcsSystem {
 
       const { vx, vy, ax, ay } = physicsComponent;
 
-      physicsComponent.x += vx;
-      physicsComponent.y += vy;
-
       physicsComponent.vx += ax;
       physicsComponent.vy += ay;
+
+      physicsComponent.x += vx;
+      physicsComponent.y += vy;
 
       physicsComponent.vx *= 0.9;
       physicsComponent.vy *= 0.9;

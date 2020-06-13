@@ -2,7 +2,6 @@ import { EcsSystem } from '@krol22/ecs';
 
 class DrawSystem extends EcsSystem {
   constructor(context) {
-    console.log('est123');
     super(['DRAW']);
 
     this.context = context;
