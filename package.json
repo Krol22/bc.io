@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build-client": "parcel build src/client/index.html"
+    "dev": "concurrently \"npm run dev-client\" \"npm run dev-server\"",
+    "dev-client": "parcel src/client/index.html",
+    "dev-server": "nodemon src/server/index.js"
   },
-  "author": "",
+  "author": "krol22ee@gmail.com",
   "license": "ISC",
   "dependencies": {
     "@babel/preset-env": "^7.10.2",
@@ -17,6 +18,7 @@
     "socket.io-client": "^2.3.0"
   },
   "devDependencies": {
+    "concurrently": "^5.2.0",
     "cssnano": "^4.1.10"
   }
 }
