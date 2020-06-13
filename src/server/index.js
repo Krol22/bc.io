@@ -43,13 +43,15 @@ io.on('connection', socket => {
 
   const connectedPlayers = rooms[roomId].players.map(player => ({ id: player.id }));
 
-  socket.emit('PLAYER_JOINED', { id: randomPlayerId, players: connectedPlayers });
-  io.to(roomId).emit('PLAYER_JOINED', { id: randomPlayerId, players: connectedPlayers });
+  // send player data to client;
+  socket.emit('PLAYER_CONNECTED', { id: randomPlayerId, players: connectedPlayers });
 
+  // inform all in room sockets;
+  io.to(roomId).emit('PLAYER_JOINED', { id: randomPlayerId, players: connectedPlayers });
 
   socket.on('disconnect', () => {
     rooms[roomId].players = [...rooms[roomId].players.filter(({id}) => id !== randomPlayerId)];
-    io.to(roomId).emit('PLAYER_DISCONNECTED', { id: randomPlayerId });
+    io.to(roomId).emit('PLAYER_LEFT', { id: randomPlayerId });
   });
 });
 

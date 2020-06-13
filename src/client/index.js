@@ -4,11 +4,9 @@ import io from 'socket.io-client';
 import { ECS, EcsEntity } from '@krol22/ecs';
 
 import InputManager from './inputManager';
+import NetworkManager from './networkManager';
 import GameLoop from '../common/engine/GameLoop';
 import DrawSystem from './systems/draw';
-
-import DrawComponent from '../common/components/draw';
-import NetworkComponent from '../common/components/network';
 
 import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } from '../common/networkActions';
 
@@ -31,6 +29,8 @@ const canvas = document.querySelector('#canvas');
 const system = new DrawSystem(canvas.getContext('2d'));
 
 ecs.addSystem(system);
+
+let joined = false;
 
 function makeId(length) {
   let result = '';
@@ -57,22 +57,7 @@ function connect() {
 
   socket = io(address);
 
-  socket.on('PLAYER_JOINED', ({ players }) => {
-    messsageElement.innerHTML = 'Connected';
-
-    players.forEach(({ id }) => {
-      const newEntity = new EcsEntity([
-        new NetworkComponent(id),
-        new DrawComponent(0, 0, 32, 32, window.assets.sprite),
-      ]);
-      ecs.addEntity(newEntity);
-    })
-  });
-
-  socket.on('PLAYER_DISCONNECTED', ({ id }) => {
-    const clientEntity = ecs.__getEntities().find((entity) => entity.getComponent('NETWORK').id === id);
-    ecs.removeEntity(clientEntity.id);
-  });
+  const networkManager = new NetworkManager(socket, ecs);
 
   socket.on('GAME_TICK', serverEntities => {
     serverEntities.forEach(serverEntity => {
