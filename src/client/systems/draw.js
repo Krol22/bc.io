@@ -5,8 +5,6 @@ class DrawSystem extends EcsSystem {
     console.log('est123');
     super(['DRAW']);
 
-    console.log('est123');
-
     this.context = context;
   }
 

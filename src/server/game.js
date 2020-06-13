@@ -1,11 +1,12 @@
 const { ECS, EcsEntity } = require('@krol22/ecs');
-const GameLoop = require('../common/engine/GameLoop');
 
-const PhysicsSystem = require('./systems/physicsSystem');
-const NetworkSystem = require('./systems/networkSystem');
+const GameLoop = require('../common/engine/GameLoop');
 
 const NetworkComponent = require('../common/components/network');
 const PhysicsComponent = require('../common/components/physics');
+
+const PhysicsSystem = require('./systems/physicsSystem');
+const NetworkSystem = require('./systems/networkSystem');
 
 const serverGameLoop = new GameLoop(30);
 

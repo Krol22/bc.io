@@ -5,33 +5,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
-    .entity {
-      width: 20px;
-      height: 20px;
-      position: absolute;
-    }
+html, body {
+  height: 100%;
 
-    #entity_0 {
-      background-color: red;
-    }
+  font-family: 'Press Start 2P', cursive;
+}
 
-    #entity_1 {
-      background-color: blue;
-    }
+* {
+  margin: 0;
+  padding: 0;
+}
 
-    #entity_2 {
-      backgrounc-color: green;
-    }
+main {
+  width: 100%;
+  height: 100%;
+  background-color: black;
 
-    #canvas {
-      border: 1px solid red;
-    }
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  color: white;
+}
+
+.canvas {
+  border: 10px solid green;
+  
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.message {
+  margin: 5rem 0;
+}
+
   </style>
 </head>
 <body>
-  <div id="message">Not connected</div>
-  <canvas id="canvas" width="500" height="500"></canvas>
+  <main>
+    <div class="message">
+      <div id="message">Not connected</div>
+    </div>
+    <div>
+      <canvas
+        class="canvas"
+        id="canvas"
+        width="600"
+        height="600">
+      </canvas>
+    </div>
+  </main>
   <script src="./index.js"></script>
 </body>
 </html>

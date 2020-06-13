@@ -25,6 +25,8 @@ const DOWN = 40;
 const clientGameLoop = new GameLoop(60);
 const ecs = new ECS();
 
+const messsageElement = document.querySelector('#message');
+
 const canvas = document.querySelector('#canvas');
 const system = new DrawSystem(canvas.getContext('2d'));
 
@@ -56,6 +58,8 @@ function connect() {
   socket = io(address);
 
   socket.on('PLAYER_JOINED', ({ players }) => {
+    messsageElement.innerHTML = 'Connected';
+
     players.forEach(({ id }) => {
       const newEntity = new EcsEntity([
         new NetworkComponent(id),
