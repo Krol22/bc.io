@@ -1,12 +1,12 @@
-const { ECS, EcsEntity } = require('@krol22/ecs');
+import { ECS, EcsEntity } from '@krol22/ecs';
 
-const GameLoop = require('../common/engine/GameLoop');
+import GameLoop from '../common/engine/GameLoop';
 
-const NetworkComponent = require('../common/components/network');
-const PhysicsComponent = require('../common/components/physics');
+import NetworkComponent from '../common/components/network';
+import PhysicsComponent from '../common/components/physics';
 
-const PhysicsSystem = require('./systems/physicsSystem');
-const ServerNetworkManager = require('./serverNetworkManager');
+import PhysicsSystem from './systems/physicsSystem';
+import ServerNetworkManager from './serverNetworkManager';
 
 const serverGameLoop = new GameLoop(30);
 

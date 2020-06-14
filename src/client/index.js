@@ -16,7 +16,6 @@ import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } from '../common/networkActi
 import sprite from './assets/tanks.png';
 
 let socket;
-let inputManager;
 
 const LEFT = 37;
 const UP = 38;
@@ -25,6 +24,9 @@ const DOWN = 40;
 
 const clientGameLoop = new GameLoop(60);
 const inputManager = new InputManager();
+const ecs = new ECS();
+
+let clientNetworkManager;
 
 function connect() {
   let roomId = window.location.pathname.split('/')[1];
@@ -39,12 +41,10 @@ function connect() {
 
   socket = io(address);
 
-  const ecs = new ECS();
-
   const canvas = document.querySelector('#canvas');
   ecs.addSystem(new DrawSystem(canvas.getContext('2d')));
 
-  new ClientNetworkManager(socket, ecs);
+  clientNetworkManager = new ClientNetworkManager(socket, ecs);
 }
 
 const loadAsset = (imageSrc, isAudio) => {
@@ -65,13 +65,13 @@ function loop() {
   inputManager.update();
 
   if (inputManager.keys[LEFT].isDown) {
-    socket.emit('CLIENT_EVENT', { event: MOVE_LEFT });
+    clientNetworkManager.sendClientEvent({ event: MOVE_LEFT });
   } else if (inputManager.keys[RIGHT].isDown) {
-    socket.emit('CLIENT_EVENT', { event: MOVE_RIGHT });
+    clientNetworkManager.sendClientEvent({ event: MOVE_RIGHT });
   } else if (inputManager.keys[UP].isDown) {
-    socket.emit('CLIENT_EVENT', { event: MOVE_UP });
+    clientNetworkManager.sendClientEvent({ event: MOVE_UP });
   } else if (inputManager.keys[DOWN].isDown) {
-    socket.emit('CLIENT_EVENT', { event: MOVE_DOWN });
+    clientNetworkManager.sendClientEvent({ event: MOVE_DOWN });
   }
 
   ecs.update();

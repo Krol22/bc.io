@@ -1,6 +1,6 @@
-const { EcsSystem } = require('@krol22/ecs');
+import { EcsSystem } from '@krol22/ecs';
 
-const { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } = require('../../common/networkActions');
+import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } from '../../common/networkActions';
 
 class PhysicsSystem extends EcsSystem { 
   constructor() {

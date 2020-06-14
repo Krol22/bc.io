@@ -20,6 +20,10 @@ export default class ClientNetworkManager {
     socket.on('GAME_TICK', this.onGameTick.bind(this));
   }
 
+  sendClientEvent(event) {
+    this.socket.emit('CLIENT_EVENT',event);
+  }
+
   onGameTick(serverEntities) {
     const systems = this.ecs.__getSystems();  
     

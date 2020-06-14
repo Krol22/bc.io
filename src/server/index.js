@@ -1,63 +1,7 @@
-const express = require('express');
-const socketio = require('socket.io');
-
-const Game = require('./game');
-
-const PORT = process.env.PORT || 3000;
-
-const app = express();
-const server = app.listen(PORT);
-
-console.log(`Listening on port ${PORT}`);
-
-const io = socketio(server);
-
-const rooms = {};
-const games = [];
-
-io.on('connection', socket => {
-  const roomId = socket.handshake.query.room;
-  const randomPlayerId = Math.floor(Math.random() * 10000);
-
-  if (!rooms[roomId]) {
-    rooms[roomId] = {
-      id: roomId,
-      players: [],
-    };
-
-    rooms[roomId].game = new Game(rooms[roomId]);
-  }
-
-  const newPlayer = {
-    id: randomPlayerId,
-    socket,
-  };
-
-  rooms[roomId].players.push(newPlayer);
-
-  socket.join(roomId);
-
-  rooms[roomId].game.addPlayer(newPlayer);
-
-  console.log(Object.keys(rooms).map(room => `${room} ${rooms[room].players.map(player => player.id)}`));
-
-  const connectedPlayers = rooms[roomId].players.map(player => ({ id: player.id }));
-
-  // send player data to client;
-  socket.emit('PLAYER_CONNECTED', { id: randomPlayerId, players: connectedPlayers });
-
-  // inform all in room sockets;
-  io.to(roomId).emit('PLAYER_JOINED', { id: randomPlayerId, players: connectedPlayers });
-
-  socket.on('disconnect', () => {
-    rooms[roomId].players = [...rooms[roomId].players.filter(({id}) => id !== randomPlayerId)];
-    io.to(roomId).emit('PLAYER_LEFT', { id: randomPlayerId });
-  });
+// Transpile all code following this line with babel and use '@babel/preset-env' (aka ES6) preset.
+require("@babel/register")({
+  presets: ["@babel/preset-env"]
 });
 
-setInterval(() => {
-  Object.keys(rooms).forEach(key => {
-    const { game } = rooms[key];
-    game.loop();
-  });
-}, 10);
+// Import the rest of our application.
+module.exports = require('./server.js')
