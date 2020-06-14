@@ -7,7 +7,39 @@ class DrawSystem extends EcsSystem {
     this.context = context;
   }
 
-  tick(delta) {
+  onServerTick(serverEntities) {
+    serverEntities.forEach(serverEntity => {
+      const networkId = serverEntity.components.find(({ _type }) => _type === 'NETWORK').id;
+
+      const clientEntity = this.systemEntities.find((entity) => entity.getComponent('NETWORK').id === networkId);
+      
+      if (!clientEntity) {
+        return;
+      }
+
+      const serverPhysicsComponent = serverEntity.components.find(({ _type }) => _type === 'PHYSICS');
+
+      const drawComponent = clientEntity.getComponent('DRAW');
+
+      drawComponent.x = serverPhysicsComponent.x;
+      drawComponent.y = serverPhysicsComponent.y;
+
+      const { vx, vy } = serverPhysicsComponent;
+
+      if (vy < 0) {
+        drawComponent.dir = 0;
+      } else if (vy > 0) {
+        drawComponent.dir = 2;
+      } else if (vx > 0) {
+        drawComponent.dir = 1;
+      } else if (vx < 0) {
+        drawComponent.dir = 3;
+      }
+
+    });
+  };
+
+  tick() {
     this.context.fillRect(0, 0, 1000, 1000);
 
     this.systemEntities.forEach(entity => {

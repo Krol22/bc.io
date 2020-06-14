@@ -1,12 +1,15 @@
 import "regenerator-runtime/runtime";
 
 import io from 'socket.io-client';
-import { ECS, EcsEntity } from '@krol22/ecs';
+import { ECS } from '@krol22/ecs';
 
 import InputManager from './inputManager';
-import NetworkManager from './networkManager';
-import GameLoop from '../common/engine/GameLoop';
+import ClientNetworkManager from './clientNetworkManager';
+
 import DrawSystem from './systems/draw';
+
+import GameLoop from '../common/engine/GameLoop';
+import makeId from '../common/misc/makeId';
 
 import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } from '../common/networkActions';
 
@@ -21,28 +24,7 @@ const RIGHT = 39;
 const DOWN = 40;
 
 const clientGameLoop = new GameLoop(60);
-const ecs = new ECS();
-
-const messsageElement = document.querySelector('#message');
-
-const canvas = document.querySelector('#canvas');
-const system = new DrawSystem(canvas.getContext('2d'));
-
-ecs.addSystem(system);
-
-let joined = false;
-
-function makeId(length) {
-  let result = '';
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const charactersLength = characters.length;
-
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-
-  return result;
-}
+const inputManager = new InputManager();
 
 function connect() {
   let roomId = window.location.pathname.split('/')[1];
@@ -57,45 +39,12 @@ function connect() {
 
   socket = io(address);
 
-  const networkManager = new NetworkManager(socket, ecs);
+  const ecs = new ECS();
 
-  socket.on('GAME_TICK', serverEntities => {
-    serverEntities.forEach(serverEntity => {
-      const networkId = serverEntity.components.find(({ _type }) => _type === 'NETWORK').id;
-      const serverPhysicsComponent = serverEntity.components.find(({ _type }) => _type === 'PHYSICS');
+  const canvas = document.querySelector('#canvas');
+  ecs.addSystem(new DrawSystem(canvas.getContext('2d')));
 
-      const clientEntity = ecs.__getEntities().find((entity) => entity.getComponent('NETWORK').id === networkId);
-      
-      if (!clientEntity) {
-        return;
-      }
-
-      const drawComponent = clientEntity.getComponent('DRAW');
-
-      drawComponent.x = serverPhysicsComponent.x;
-      drawComponent.y = serverPhysicsComponent.y;
-
-      const { vx, vy } = serverPhysicsComponent;
-
-      if (vy < 0) {
-        drawComponent.dir = 0;
-      }
-
-      if (vy > 0) {
-        drawComponent.dir = 2;
-      }
-
-      if (vx > 0) {
-        drawComponent.dir = 1;
-      }
-
-      if (vx < 0) {
-        drawComponent.dir = 3;
-      }
-    });
-  });
-
-  inputManager = new InputManager();
+  new ClientNetworkManager(socket, ecs);
 }
 
 const loadAsset = (imageSrc, isAudio) => {

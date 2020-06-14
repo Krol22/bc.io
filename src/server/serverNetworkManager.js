@@ -1,4 +1,4 @@
-class NetworkSystem {
+class ServerNetworkManager {
   constructor(entities, systems) {
     this.entities = entities;
     this.systems = systems;
@@ -35,4 +35,4 @@ class NetworkSystem {
   }
 }
 
-module.exports = NetworkSystem;
+module.exports = ServerNetworkManager;

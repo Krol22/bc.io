@@ -5,7 +5,7 @@ import { EcsEntity } from '@krol22/ecs';
 import DrawComponent from '../common/components/draw';
 import NetworkComponent from '../common/components/network';
 
-export default class NetworkManager {
+export default class ClientNetworkManager {
   constructor(socket, ecs) {
     this.connected = false;
     this.socket = socket;
@@ -17,6 +17,17 @@ export default class NetworkManager {
     socket.on('PLAYER_DISCONNECTED', this.onPlayerDisconnected.bind(this));
     socket.on('PLAYER_JOINED', this.onPlayerJoined.bind(this));
     socket.on('PLAYER_LEFT', this.onPlayerLeft.bind(this));
+    socket.on('GAME_TICK', this.onGameTick.bind(this));
+  }
+
+  onGameTick(serverEntities) {
+    const systems = this.ecs.__getSystems();  
+    
+    systems.forEach(system => {
+      if(system.onServerTick) {
+        system.onServerTick(serverEntities);
+      } 
+    });
   }
 
   onPlayerConnected({ players }) {

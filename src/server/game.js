@@ -6,7 +6,7 @@ const NetworkComponent = require('../common/components/network');
 const PhysicsComponent = require('../common/components/physics');
 
 const PhysicsSystem = require('./systems/physicsSystem');
-const NetworkSystem = require('./systems/networkSystem');
+const ServerNetworkManager = require('./serverNetworkManager');
 
 const serverGameLoop = new GameLoop(30);
 
@@ -18,7 +18,7 @@ class Game {
 
     const physicsSystem = new PhysicsSystem();
 
-    this.networkSystem = new NetworkSystem(this.entities, [physicsSystem]);
+    this.serverNetworkManager = new ServerNetworkManager(this.entities, [physicsSystem]);
 
     this.ecs.addSystem(physicsSystem);
   }
@@ -31,7 +31,7 @@ class Game {
     this.entities.push(newEntity);
     this.ecs.addEntity(newEntity);
 
-    this.networkSystem.addPlayer(newPlayer);
+    this.serverNetworkManager.addPlayer(newPlayer);
   }
 
   removePlayer(playerId) {
@@ -39,7 +39,7 @@ class Game {
 
   loop() {
     this.ecs.update();
-    this.networkSystem.sendClientInfo();
+    this.serverNetworkManager.sendClientInfo();
   }
 
   start() {
