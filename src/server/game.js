@@ -35,6 +35,10 @@ class Game {
   }
 
   removePlayer(playerId) {
+    const entityToRemoveId = this.ecs.__getEntities().find(entity => entity.getComponent('NETWORK').id === playerId).id;
+
+    this.ecs.removeEntity(entityToRemoveId);
+    this.serverNetworkManager.removePlayer(playerId);
   }
 
   loop() {

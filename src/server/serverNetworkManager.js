@@ -33,6 +33,10 @@ class ServerNetworkManager {
       systemsWithNetworkActions.forEach(system => system.networkActions[event](entity));
     }));
   }
+
+  removePlayer(playerId) {
+    this.players = this.players.filter(({ id }) => playerId !== id);
+  }
 }
 
 module.exports = ServerNetworkManager;
