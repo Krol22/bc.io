@@ -15,6 +15,8 @@
   "author": "krol22ee@gmail.com",
   "license": "ISC",
   "dependencies": {
+    "@babel/core": "^7.10.2",
+    "@babel/register": "^7.10.1",
     "@babel/preset-env": "^7.10.2",
     "@krol22/ecs": "^0.1.2",
     "common": "^0.2.5",
@@ -26,8 +28,6 @@
     "socket.io-client": "^2.3.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.10.2",
-    "@babel/register": "^7.10.1",
     "concurrently": "^5.2.0",
     "cssnano": "^4.1.10",
     "eslint": "^7.2.0"
