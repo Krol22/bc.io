@@ -37,6 +37,9 @@ function connect() {
     return;
   } 
 
+
+  const protocol = process.env.SERVER==='localhost:3000' ? 'http' : 'https';
+
   const address = `http://${process.env.SERVER}/?room=${roomId}`;
 
   socket = io(address);

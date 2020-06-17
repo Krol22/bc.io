@@ -9,7 +9,8 @@
     "dev-server": "nodemon src/server/index.js",
     "build-client": "parcel build src/client/index.html -d dist/client; cp _redirects dist/client/",
     "build-client-prod": "NODE_ENV=prod; parcel build src/client/index.html -d dist/client; cp _redirects dist/client/",
-    "start": "node src/server/index.js"
+    "start": "node src/server/index.js",
+    "web": "node src/server/index.js"
   },
   "author": "krol22ee@gmail.com",
   "license": "ISC",
@@ -30,5 +31,8 @@
     "concurrently": "^5.2.0",
     "cssnano": "^4.1.10",
     "eslint": "^7.2.0"
+  },
+  "engins": {
+    "node": "12.x"
   }
 }
