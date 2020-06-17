@@ -37,7 +37,7 @@ function connect() {
     return;
   } 
 
-  const address = `http://localhost:3000/?room=${roomId}`;
+  const address = `http://${process.env.SERVER}/?room=${roomId}`;
 
   socket = io(address);
 
