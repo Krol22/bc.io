@@ -1,28 +1,52 @@
 import { ECS } from '@krol22/ecs';
+import io from 'socket.io-client';
 
 import InputManager from '../inputManager';
 import ClientNetworkManager from '../clientNetworkManager';
-import GameState from '../../common/engine/state/GameState';
+
+import makeId from '../../common/misc/makeId';
+import GameLoop from '../../common/engine/GameLoop';
 
 import DrawSystem from '../systems/draw';
 
-import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } from '../common/networkActions';
+import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } from '../../common/networkActions';
 
 const LEFT = 37;
 const UP = 38;
 const RIGHT = 39;
 const DOWN = 40;
 
-class PlayState extends GameState {
+
+const clientGameLoop = new GameLoop(60);
+
+class PlayState extends HTMLElement {
   constructor() {
-    super('PLAY');
+    super();
 
     this.ecs = new ECS();
     this.inputManager = new InputManager();
+
+    this.update = this.update.bind(this);
   } 
+
+  connectedCallback() {
+    this.innerHTML = this.render();
+    this.onStart();
+
+    clientGameLoop.start(this.update);
+  }
 
   onStart() {
     let socket = 'teest';
+    let roomId = window.location.pathname.split('/')[1];
+
+    if(!roomId) {
+      roomId = makeId(6);
+    } 
+
+    const address = `${process.env.SERVER}/?room=${roomId}`;
+
+    socket = io(address);
 
     const canvas = document.querySelector('#canvas');
     this.ecs.addSystem(new DrawSystem(canvas.getContext('2d')));
@@ -49,6 +73,21 @@ class PlayState extends GameState {
 
     this.ecs.update();
   }
+
+  render() {
+    return `
+      <section class="play">
+        <canvas
+          class="canvas"
+          id="canvas"
+          width="600"
+          height="600">
+        </canvas>
+      </section>
+    `;
+  }
 }
+
+customElements.define('play-state', PlayState);
 
 export default PlayState;

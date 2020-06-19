@@ -15,6 +15,11 @@ import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } from '../common/networkActi
 
 import sprite from './assets/tanks.png';
 
+import 'nes.css/css/nes.min.css';
+
+import './states/MenuState';
+import './states/PlayState';
+
 let socket;
 
 const LEFT = 37;
@@ -80,8 +85,11 @@ function loop() {
 const start = async () => {
   window.assets = {};
   window.assets.sprite = await loadAsset(sprite);
-  connect();
-  clientGameLoop.start(loop);
 }
 
-start();
+start()
+  .then(() => {
+    const appRoot = document.querySelector('#game-root');
+    appRoot.innerHTML = '<menu-state></menu-state>';
+  });
+
