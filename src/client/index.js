@@ -19,6 +19,7 @@ import 'nes.css/css/nes.min.css';
 
 import './states/MenuState';
 import './states/PlayState';
+import './states/LobbyState';
 
 let socket;
 
@@ -90,6 +91,6 @@ const start = async () => {
 start()
   .then(() => {
     const appRoot = document.querySelector('#game-root');
-    appRoot.innerHTML = '<menu-state></menu-state>';
+    appRoot.innerHTML = '<lobby-state random="random"></lobby-state>';
   });
 

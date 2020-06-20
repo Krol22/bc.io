@@ -16,7 +16,6 @@ const UP = 38;
 const RIGHT = 39;
 const DOWN = 40;
 
-
 const clientGameLoop = new GameLoop(60);
 
 class PlayState extends HTMLElement {
@@ -40,11 +39,18 @@ class PlayState extends HTMLElement {
     let socket = 'teest';
     let roomId = window.location.pathname.split('/')[1];
 
+
     if(!roomId) {
-      roomId = makeId(6);
+      roomId = this.getAttribute('room-id') || makeId(6);
     } 
 
-    const address = `${process.env.SERVER}/?room=${roomId}`;
+    window.history.replaceState({ url: roomId }, '', roomId);
+
+    // TODO: sanitize!
+    const userName = localStorage.getItem('userName');
+
+    // eslint-disable-next-line no-undef
+    const address = `${process.env.SERVER}/?room=${roomId}&uname=${userName}`;
 
     socket = io(address);
 
