@@ -41,7 +41,7 @@ io.on('connection', socket => {
 
   console.log(Object.keys(rooms).map(room => `${room} ${rooms[room].players.map(player => player.id + ' ' + player.userName)}`));
 
-  const connectedPlayers = rooms[roomId].players.map(player => ({ id: player.id }));
+  const connectedPlayers = rooms[roomId].players.map(player => ({ id: player.id, userName: player.userName }));
 
   // send player data to client;
   socket.emit('PLAYER_CONNECTED', { id: randomPlayerId, players: connectedPlayers });

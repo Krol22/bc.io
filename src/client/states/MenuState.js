@@ -4,6 +4,8 @@ class MenuState extends HTMLElement {
 
     const joinBtn = document.querySelector('#join-btn');
     const createBtn = document.querySelector('#create-btn');
+    const joinRoomBtn = document.querySelector('#join-room-btn');
+
     const nameField = document.querySelector('#name_field');
 
     joinBtn.addEventListener('click', () => {
@@ -20,6 +22,15 @@ class MenuState extends HTMLElement {
 
       const appRoot = document.querySelector('#game-root');
       appRoot.innerHTML = '<lobby-state random></lobby-state>';
+    });
+
+    joinRoomBtn.addEventListener('click', () => {
+      const userName = nameField.value;
+      const roomId = document.querySelector('#room_field').value;
+      localStorage.setItem('userName', userName);
+
+      const appRoot = document.querySelector('#game-root');
+      appRoot.innerHTML = `<lobby-state roomId=${roomId}></lobby-state>`;
     });
 
     if (localStorage.getItem('userName')) {
@@ -74,9 +85,14 @@ class MenuState extends HTMLElement {
           <label for="name_field">Name</label>
           <input type="text" id="name_field" class="nes-input">
         </div>
+        <div class="nes-field">
+          <label for="room_field">RoomId</label>
+          <input type="text" id="room_field" class="nes-input">
+        </div>
         <div class="menu_buttons">
           <button id="create-btn" class="nes-btn">Create Room</button>
           <button id="join-btn" class="nes-btn">Join Random</button>
+          <button id="join-room-btn" class="nes-btn">Join Room</button>
         </div>
       </section>
     `;

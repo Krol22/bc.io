@@ -21,6 +21,8 @@ import './states/MenuState';
 import './states/PlayState';
 import './states/LobbyState';
 
+import './ui/lobby/players';
+
 let socket;
 
 const LEFT = 37;
@@ -91,6 +93,6 @@ const start = async () => {
 start()
   .then(() => {
     const appRoot = document.querySelector('#game-root');
-    appRoot.innerHTML = '<lobby-state random="random"></lobby-state>';
+    appRoot.innerHTML = '<menu-state random="random"></menu-state>';
   });
 

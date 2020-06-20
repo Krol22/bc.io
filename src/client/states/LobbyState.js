@@ -2,16 +2,36 @@ import io from 'socket.io-client';
 
 import makeId from '../../common/misc/makeId';
 
-class LobbyState extends HTMLElement {
-  connectedCallback() {
-    this.innerHTML = this.render();
+import NetworkManager from '../networkManager';
 
+import networkEvents from '../../common/constants/networkEvents';
+
+const { PLAYER_CONNECTED, PLAYER_JOINED, PLAYER_LEFT } = networkEvents;
+
+class LobbyState extends HTMLElement {
+  constructor() {
+    super();
+
+    this.players = [];
+  }
+
+  connectedCallback() {
     const random = this.getAttribute('random');
     const join = this.getAttribute('join');
+    // #TODO remove this later -> it's only for testing purposes
+    const roomId = this.getAttribute('roomId');
 
-    const connectingBox = document.querySelector('#lobby-connecting');
+    if (roomId) {
+      const userName = localStorage.getItem('userName');
+      window.history.replaceState({ url: roomId }, '', roomId);
 
-    if (random) {
+      // eslint-disable-next-line no-undef
+      const address = `${process.env.SERVER}/?room=${roomId}&uname=${userName}`;
+      window.playerSocket = io(address);
+
+      this.roomId = roomId;
+
+    } else if (random) {
       const roomId = makeId(6);
       const userName = localStorage.getItem('userName');
 
@@ -22,16 +42,57 @@ class LobbyState extends HTMLElement {
 
       window.playerSocket = io(address);
 
-      connectingBox.style.display = 'none';
-    }
-
-    if (join) {
+      this.roomId = roomId;
+    } else if (join) {
       console.log('join');
     }
+
+    this.networkManager = new NetworkManager(window.playerSocket);
+
+    console.log(PLAYER_CONNECTED, PLAYER_JOINED, PLAYER_LEFT);
+
+    this.networkManager.addEventListener(PLAYER_CONNECTED, this.onPlayerConnected.bind(this));
+    this.networkManager.addEventListener(PLAYER_JOINED, this.onPlayerConnected.bind(this));
+    this.networkManager.addEventListener(PLAYER_LEFT, this.onPlayerLeft.bind(this));
+
+    this.render();
+  }
+
+  disconnectedCallback() {
+    this.networkManager.removeEventListener(PLAYER_CONNECTED, this.onPlayerConnected);
+    this.networkManager.removeEventListener(PLAYER_JOINED, this.onPlayerJoined);
+    this.networkManager.removeEventListener(PLAYER_LEFT, this.onPlayerJoined);
+  }
+
+  onPlayerJoined() {
+    
+  }
+
+  onPlayerLeft({ id }) {
+    console.log(JSON.stringify(this.players));
+    console.log(id);
+
+    this.players = [...this.players.filter(player => {
+      return player.id !== id;
+    })];
+
+    this.render();
+
+    const connectingBox = document.querySelector('#lobby-connecting');
+    connectingBox.style.display = 'none';
+  }
+
+  onPlayerConnected({ players }) {
+    this.players = players;
+
+    this.render();
+
+    const connectingBox = document.querySelector('#lobby-connecting');
+    connectingBox.style.display = 'none';
   }
 
   render() {
-    return `
+    this.innerHTML = `
       <style>
         @keyframes scale {
           50% {
@@ -72,18 +133,8 @@ class LobbyState extends HTMLElement {
           <h2>Lobby</h2>
         </div>
         <div class="users nes-container with-title">
-          <p class="title">Room: l1gj-d9 players</p>
-          <div class="lobby-players">
-            <div class="lobby-player">
-              <div class="player-nick">Test1</div> <div class="remove-player">X</div>
-            </div>
-            <div class="lobby-player">
-              <div class="player-nick">Test1</div> <div class="remove-player">X</div>
-            </div>
-            <div class="lobby-player">
-              <div class="player-nick">Test1</div> <div class="remove-player">X</div>
-            </div>
-          </div>
+          <p class="title">Room: ${this.roomId} players</p>
+          <lobby-players players=${JSON.stringify(this.players)}></lobby-players>
           <div class="start-btn">
             <button id="start-btn" class="nes-btn">Start</button>
           </div>
