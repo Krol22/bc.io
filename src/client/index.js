@@ -93,6 +93,16 @@ const start = async () => {
 start()
   .then(() => {
     const appRoot = document.querySelector('#game-root');
-    appRoot.innerHTML = '<menu-state random="random"></menu-state>';
+
+    let roomId = window.location.pathname.split('/')[1];
+
+    if (!roomId) {
+      appRoot.innerHTML = '<menu-state></menu-state>';
+    }
+
+    if (roomId) {
+      appRoot.innerHTML = `<lobby-state roomId="${roomId}"></lobby-state>`
+    }
+
   });
 

@@ -8,6 +8,15 @@ import networkEvents from '../../common/constants/networkEvents';
 
 const { PLAYER_CONNECTED, PLAYER_JOINED, PLAYER_LEFT } = networkEvents;
 
+const copyToClipboard = str => {
+  const el = document.createElement('textarea');
+  el.value = str;
+  document.body.appendChild(el);
+  el.select();
+  document.execCommand('copy');
+  document.body.removeChild(el);
+};
+
 class LobbyState extends HTMLElement {
   constructor() {
     super();
@@ -21,6 +30,8 @@ class LobbyState extends HTMLElement {
     // #TODO remove this later -> it's only for testing purposes
     const roomId = this.getAttribute('roomId');
 
+    console.log(this);
+
     if (roomId) {
       const userName = localStorage.getItem('userName');
       window.history.replaceState({ url: roomId }, '', roomId);
@@ -32,6 +43,7 @@ class LobbyState extends HTMLElement {
       this.roomId = roomId;
 
     } else if (random) {
+      console.log('hee');
       const roomId = makeId(6);
       const userName = localStorage.getItem('userName');
 
@@ -48,8 +60,6 @@ class LobbyState extends HTMLElement {
     }
 
     this.networkManager = new NetworkManager(window.playerSocket);
-
-    console.log(PLAYER_CONNECTED, PLAYER_JOINED, PLAYER_LEFT);
 
     this.networkManager.addEventListener(PLAYER_CONNECTED, this.onPlayerConnected.bind(this));
     this.networkManager.addEventListener(PLAYER_JOINED, this.onPlayerConnected.bind(this));
@@ -69,9 +79,6 @@ class LobbyState extends HTMLElement {
   }
 
   onPlayerLeft({ id }) {
-    console.log(JSON.stringify(this.players));
-    console.log(id);
-
     this.players = [...this.players.filter(player => {
       return player.id !== id;
     })];
@@ -124,6 +131,17 @@ class LobbyState extends HTMLElement {
           transform: rotate(15deg);
           animation: rotate 2.5s infinite ease-in-out;
         }
+
+        .lobby_game-link {
+          margin-top: 2rem;
+          text-align: center;
+        }
+
+        .link {
+          text-decoration: underline;
+          cursor: pointer;
+        }
+
       </style>
       <section class="lobby">
         <div id="lobby-connecting" class="lobby_connecting">
@@ -139,8 +157,15 @@ class LobbyState extends HTMLElement {
             <button id="start-btn" class="nes-btn">Start</button>
           </div>
         </div>
+        <div class="lobby_game-link">
+          Copy <span id="link" class="link">link</span> to invite other players.
+        </div>
       </section>
     `;
+
+    document.querySelector('#link').addEventListener('click', () => {
+      copyToClipboard(`${window.location.href}`);
+    });
   }
 }
 
