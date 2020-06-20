@@ -4,6 +4,7 @@ const networkEvents = {
   PLAYER_JOINED: 'PLAYER_JOINED',
   PLAYER_LEFT: 'PLAYER_LEFT',
   GAME_TICK: 'GAME_TICK',
+  ERROR: 'ERROR',
 };
 
 export default networkEvents;

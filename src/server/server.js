@@ -18,6 +18,15 @@ io.on('connection', socket => {
 
   const randomPlayerId = Math.floor(Math.random() * 10000);
 
+
+  console.log(rooms[roomId] && rooms[roomId].players.length);
+
+  if (rooms[roomId] && rooms[roomId].players.length > 3) {
+    // should disconnect from socket
+    socket.emit('ERROR', { type: 'FULL_ROOM' });
+    return;
+  }
+
   if (!rooms[roomId]) {
     rooms[roomId] = {
       id: roomId,
@@ -42,6 +51,7 @@ io.on('connection', socket => {
   console.log(Object.keys(rooms).map(room => `${room} ${rooms[room].players.map(player => player.id + ' ' + player.userName)}`));
 
   const connectedPlayers = rooms[roomId].players.map(player => ({ id: player.id, userName: player.userName }));
+
 
   // send player data to client;
   socket.emit('PLAYER_CONNECTED', { id: randomPlayerId, players: connectedPlayers });

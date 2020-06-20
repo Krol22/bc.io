@@ -64,6 +64,7 @@ class LobbyState extends HTMLElement {
     this.networkManager.addEventListener(PLAYER_CONNECTED, this.onPlayerConnected.bind(this));
     this.networkManager.addEventListener(PLAYER_JOINED, this.onPlayerConnected.bind(this));
     this.networkManager.addEventListener(PLAYER_LEFT, this.onPlayerLeft.bind(this));
+    this.networkManager.addEventListener('ERROR', this.onConnectionError.bind(this));
 
     this.render();
   }
@@ -96,6 +97,12 @@ class LobbyState extends HTMLElement {
 
     const connectingBox = document.querySelector('#lobby-connecting');
     connectingBox.style.display = 'none';
+  }
+
+  onConnectionError({ type }) {
+    console.log(type);
+    const appRoot = document.querySelector('#game-root');
+    appRoot.innerHTML = '<menu-state></menu-state>';
   }
 
   render() {
