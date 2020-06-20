@@ -8,6 +8,11 @@ import PhysicsComponent from '../common/components/physics';
 import PhysicsSystem from './systems/physicsSystem';
 import ServerNetworkManager from './serverNetworkManager';
 
+const GAME_STATES = {
+  LOBBY: 'LOBBY',
+  PLAY: 'PLAY',
+};
+
 const serverGameLoop = new GameLoop(30);
 
 class Game {
@@ -16,10 +21,11 @@ class Game {
     this.networkEntities = [];
     this.ecs = new ECS();
 
+    this.state = GAME_STATES.LOBBY;
+
     const physicsSystem = new PhysicsSystem();
 
     this.serverNetworkManager = new ServerNetworkManager(this.entities, [physicsSystem]);
-
     this.ecs.addSystem(physicsSystem);
   }
 
@@ -47,6 +53,7 @@ class Game {
   }
 
   start() {
+    this.state = GAME_STATES.PLAY;
     serverGameLoop.start(this.loop.bind(this));
   }
 }

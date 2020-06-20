@@ -1,4 +1,4 @@
-import "regenerator-runtime/runtime";
+import 'regenerator-runtime/runtime';
 
 import io from 'socket.io-client';
 import { ECS } from '@krol22/ecs';
@@ -22,6 +22,7 @@ import './states/PlayState';
 import './states/LobbyState';
 
 import './ui/lobby/players';
+import './ui/modal/modal';
 
 let socket;
 

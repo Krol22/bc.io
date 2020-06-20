@@ -70,16 +70,10 @@ class MenuState extends HTMLElement {
         }
       </style>
       <section class="menu">
-        <dialog class="nes-dialog" id="dialog-default">
-          <form method="dialog">
-            <p class="title">Connecting</p>
-            <p>Connecting...</p>
-            <menu class="dialog-menu">
-              <button class="nes-btn">Cancel</button>
-              <button class="nes-btn is-primary">Confirm</button>
-            </menu>
-          </form>
-        </dialog>
+        <game-modal>
+          <div slot="modal-content">Test123</div>
+        </game-modal>
+
         <h1>BC.io</h1>
         <div class="nes-field">
           <label for="name_field">Name</label>

@@ -34,7 +34,7 @@ export default class NetworkManager {
   removeEventListener(eventName, callback) {
     const index = this.events[eventName].indexOf(callback); 
 
-    this.events.splice(index, 1);
+    this.events[eventName].splice(index, 1);
   }
 
   removeAllEventListeners(eventName) {

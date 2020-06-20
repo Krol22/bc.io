@@ -173,6 +173,11 @@ class LobbyState extends HTMLElement {
     document.querySelector('#link').addEventListener('click', () => {
       copyToClipboard(`${window.location.href}`);
     });
+
+    document.querySelector('#start-btn').addEventListener('click', () => {
+      const appRoot = document.querySelector('#game-root');
+      appRoot.innerHTML = '<play-state></play-state>';
+    });
   }
 }
 

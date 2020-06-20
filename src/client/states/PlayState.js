@@ -1,10 +1,8 @@
 import { ECS } from '@krol22/ecs';
-import io from 'socket.io-client';
 
 import InputManager from '../inputManager';
 import ClientNetworkManager from '../clientNetworkManager';
 
-import makeId from '../../common/misc/makeId';
 import GameLoop from '../../common/engine/GameLoop';
 
 import DrawSystem from '../systems/draw';
@@ -36,28 +34,9 @@ class PlayState extends HTMLElement {
   }
 
   onStart() {
-    let socket = 'teest';
-    let roomId = window.location.pathname.split('/')[1];
-
-
-    if(!roomId) {
-      roomId = this.getAttribute('room-id') || makeId(6);
-    } 
-
-    window.history.replaceState({ url: roomId }, '', roomId);
-
-    // TODO: sanitize!
-    const userName = localStorage.getItem('userName');
-
-    // eslint-disable-next-line no-undef
-    const address = `${process.env.SERVER}/?room=${roomId}&uname=${userName}`;
-
-    socket = io(address);
-
     const canvas = document.querySelector('#canvas');
     this.ecs.addSystem(new DrawSystem(canvas.getContext('2d')));
-
-    this.clientNetworkManager = new ClientNetworkManager(socket, this.ecs);
+    this.clientNetworkManager = new ClientNetworkManager(window.playerSocket, this.ecs);
   }
 
   onEnd() {
