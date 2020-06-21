@@ -19,6 +19,10 @@ export default class NetworkManager {
       });
   }
 
+  sendClientEvent(eventName, event) {
+    this.socket.emit(eventName, event);
+  }
+
   onNetworkEvent(eventName, args) {
     this
       .events[eventName]

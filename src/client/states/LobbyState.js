@@ -30,8 +30,6 @@ class LobbyState extends HTMLElement {
     // #TODO remove this later -> it's only for testing purposes
     const roomId = this.getAttribute('roomId');
 
-    console.log(this);
-
     if (roomId) {
       const userName = localStorage.getItem('userName');
       window.history.replaceState({ url: roomId }, '', roomId);
@@ -43,7 +41,6 @@ class LobbyState extends HTMLElement {
       this.roomId = roomId;
 
     } else if (random) {
-      console.log('hee');
       const roomId = makeId(6);
       const userName = localStorage.getItem('userName');
 
@@ -66,6 +63,8 @@ class LobbyState extends HTMLElement {
     this.networkManager.addEventListener(PLAYER_LEFT, this.onPlayerLeft.bind(this));
     this.networkManager.addEventListener('ERROR', this.onConnectionError.bind(this));
 
+    this.networkManager.addEventListener('GAME_STARTED', this.onGameStarted.bind(this));
+
     this.render();
   }
 
@@ -73,6 +72,11 @@ class LobbyState extends HTMLElement {
     this.networkManager.removeEventListener(PLAYER_CONNECTED, this.onPlayerConnected);
     this.networkManager.removeEventListener(PLAYER_JOINED, this.onPlayerJoined);
     this.networkManager.removeEventListener(PLAYER_LEFT, this.onPlayerJoined);
+  }
+
+  onGameStarted() {
+    const appRoot = document.querySelector('#game-root');
+    appRoot.innerHTML = '<play-state started="started"></play-state>';
   }
 
   onPlayerJoined() {
@@ -88,6 +92,8 @@ class LobbyState extends HTMLElement {
 
     const connectingBox = document.querySelector('#lobby-connecting');
     connectingBox.style.display = 'none';
+
+    window.players = [...this.players];
   }
 
   onPlayerConnected({ players }) {
@@ -97,10 +103,11 @@ class LobbyState extends HTMLElement {
 
     const connectingBox = document.querySelector('#lobby-connecting');
     connectingBox.style.display = 'none';
+
+    window.players = [...this.players];
   }
 
   onConnectionError({ type }) {
-    console.log(type);
     const appRoot = document.querySelector('#game-root');
     appRoot.innerHTML = '<menu-state></menu-state>';
   }

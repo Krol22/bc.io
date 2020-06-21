@@ -1,11 +1,14 @@
-import { ECS } from '@krol22/ecs';
+import { ECS, EcsEntity } from '@krol22/ecs';
 
 import InputManager from '../inputManager';
-import ClientNetworkManager from '../clientNetworkManager';
+import NetworkManager from '../networkManager';
 
 import GameLoop from '../../common/engine/GameLoop';
 
 import DrawSystem from '../systems/draw';
+
+import DrawComponent from '../../common/components/draw';
+import NetworkComponent from '../../common/components/network';
 
 import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } from '../../common/networkActions';
 
@@ -24,19 +27,52 @@ class PlayState extends HTMLElement {
     this.inputManager = new InputManager();
 
     this.update = this.update.bind(this);
+
+    this.networkManager = new NetworkManager(window.playerSocket);
   } 
 
   connectedCallback() {
     this.innerHTML = this.render();
-    this.onStart();
 
-    clientGameLoop.start(this.update);
+    const canvas = document.querySelector('#canvas');
+    this.ecs.addSystem(new DrawSystem(canvas.getContext('2d')));
+
+    window.players.forEach(player => {
+      const newEntity = new EcsEntity([
+        new NetworkComponent(player.id),
+        new DrawComponent(0, 0, 32, 32, window.assets.sprite),
+      ]);
+
+      this.ecs.addEntity(newEntity);
+    });
+
+    if (!this.getAttribute('started')) {
+      this.networkManager.sendClientEvent('GAME_START', {});
+      this.networkManager.addEventListener('GAME_STARTED', this.onGameStarted.bind(this));
+    } else {
+      this.onGameStarted();
+    }
+
+    this.onStart();
   }
 
   onStart() {
-    const canvas = document.querySelector('#canvas');
-    this.ecs.addSystem(new DrawSystem(canvas.getContext('2d')));
-    this.clientNetworkManager = new ClientNetworkManager(window.playerSocket, this.ecs);
+    this.networkManager.addEventListener('GAME_TICK', this.onGameTick.bind(this));
+  }
+
+  onGameStarted() {
+    console.log('started');
+    clientGameLoop.start(this.update);
+  }
+
+  onGameTick(serverEntities) {
+    const systems = this.ecs.__getSystems();  
+    
+    systems.forEach(system => {
+      if(system.onServerTick) {
+        system.onServerTick(serverEntities);
+      } 
+    });
   }
 
   onEnd() {
@@ -47,13 +83,13 @@ class PlayState extends HTMLElement {
     this.inputManager.update();
 
     if (this.inputManager.keys[LEFT].isDown) {
-      this.clientNetworkManager.sendClientEvent({ event: MOVE_LEFT });
+      this.networkManager.sendClientEvent('CLIENT_EVENT', { event: MOVE_LEFT });
     } else if (this.inputManager.keys[RIGHT].isDown) {
-      this.clientNetworkManager.sendClientEvent({ event: MOVE_RIGHT });
+      this.networkManager.sendClientEvent('CLIENT_EVENT', { event: MOVE_RIGHT });
     } else if (this.inputManager.keys[UP].isDown) {
-      this.clientNetworkManager.sendClientEvent({ event: MOVE_UP });
+      this.networkManager.sendClientEvent('CLIENT_EVENT', { event: MOVE_UP });
     } else if (this.inputManager.keys[DOWN].isDown) {
-      this.clientNetworkManager.sendClientEvent({ event: MOVE_DOWN });
+      this.networkManager.sendClientEvent('CLIENT_EVENT', { event: MOVE_DOWN });
     }
 
     this.ecs.update();

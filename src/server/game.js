@@ -25,7 +25,7 @@ class Game {
 
     const physicsSystem = new PhysicsSystem();
 
-    this.serverNetworkManager = new ServerNetworkManager(this.entities, [physicsSystem]);
+    this.serverNetworkManager = new ServerNetworkManager(this.entities, [physicsSystem], this);
     this.ecs.addSystem(physicsSystem);
   }
 
@@ -54,8 +54,9 @@ class Game {
 
   start() {
     this.state = GAME_STATES.PLAY;
+    this.serverNetworkManager.startGame();
     serverGameLoop.start(this.loop.bind(this));
   }
 }
 
-module.exports = Game;
+export default Game;

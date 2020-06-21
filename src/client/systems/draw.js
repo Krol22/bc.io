@@ -37,7 +37,7 @@ class DrawSystem extends EcsSystem {
       }
 
     });
-  };
+  }
 
   tick() {
     this.context.fillRect(0, 0, 1000, 1000);
