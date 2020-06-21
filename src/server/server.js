@@ -1,7 +1,7 @@
 import express from 'express';
 import socketio from 'socket.io';
 
-import Game from './game';
+import Game from './newGame';
 
 const PORT = process.env.PORT || 3000;
 

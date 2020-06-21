@@ -18,33 +18,23 @@ const serverGameLoop = new GameLoop(30);
 class Game {
   constructor() {
     this.entities = [];
+    this.players = [];
     this.networkEntities = [];
-    this.ecs = new ECS();
 
     this.state = GAME_STATES.LOBBY;
 
-    const physicsSystem = new PhysicsSystem();
-
-    this.serverNetworkManager = new ServerNetworkManager(this.entities, [physicsSystem], this);
-    this.ecs.addSystem(physicsSystem);
+    this.ecs = new ECS();
   }
 
   addPlayer(newPlayer) {
-    const players = this.ecs.__getEntities();
-
-    const newEntity = new EcsEntity([new PhysicsComponent(33 * players.length, 0), new NetworkComponent(newPlayer.id)]);
-
-    this.entities.push(newEntity);
-    this.ecs.addEntity(newEntity);
-
     this.serverNetworkManager.addPlayer(newPlayer);
+    this.players.push(newPlayer);
   }
 
-  removePlayer(playerId) {
-    const entityToRemoveId = this.ecs.__getEntities().find(entity => entity.getComponent('NETWORK').id === playerId).id;
+  restartGame() {}
 
-    this.ecs.removeEntity(entityToRemoveId);
-    this.serverNetworkManager.removePlayer(playerId);
+  removePlayer(playerId) {
+    this.players = [...this.players.filter(({ id }) => playerId !== id)];
   }
 
   loop() {
@@ -54,8 +44,37 @@ class Game {
 
   start() {
     this.state = GAME_STATES.PLAY;
+
+    console.log('gameStart');
+
+    this.ecs = new ECS();
+
+    const physicsSystem = new PhysicsSystem();
+    this.ecs.addSystem(physicsSystem);
+
+    this.players.forEach(player => {
+      const newEntity = new EcsEntity([
+        new PhysicsComponent(33 * this.players.length, 0),
+        new NetworkComponent(player.id)
+      ]);
+
+      this.ecs.addEntity(newEntity);
+    });
+
+    this.serverNetworkManager = new ServerNetworkManager(
+      this.ecs.__getEntities(),
+      [physicsSystem],
+      this
+    );
+
     this.serverNetworkManager.startGame();
-    serverGameLoop.start(this.loop.bind(this));
+    this.loopId = serverGameLoop.start(this.loop.bind(this));
+  }
+
+  end() {
+    this.state = GAME_STATES.LOBBY;
+    this.serverNetworkManager.endGame();
+    serverGameLoop.stop(this.loopId);
   }
 }
 

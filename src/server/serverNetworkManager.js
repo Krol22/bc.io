@@ -21,13 +21,24 @@ class ServerNetworkManager {
     });
   }
 
+  endGame() {
+    this.players.forEach(({ socket }) => {
+      socket.emit('GAME_ENDED');  
+    });
+  }
+
   addPlayer(newPlayer) {
     const { id, socket } = newPlayer;
 
     this.players.push(newPlayer);
 
     socket.on('GAME_START', () => {
+      console.log('test23');
       this.game.start();
+    });
+
+    socket.on('GAME_END', () => {
+      this.game.end();
     });
 
     socket.on('CLIENT_EVENT', (({event}) => {

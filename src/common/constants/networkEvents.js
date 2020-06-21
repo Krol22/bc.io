@@ -6,6 +6,8 @@ const networkEvents = {
   GAME_TICK: 'GAME_TICK',
   GAME_START: 'GAME_START',
   GAME_STARTED: 'GAME_STARTED',
+  GAME_END: 'GAME_END',
+  GAME_ENDED: 'GAME_ENDED',
   ERROR: 'ERROR',
 };
 

@@ -36,8 +36,13 @@ class GameLoop {
   }
 
   stop(id) {
+    if (typeof window === 'undefined') {
+      clearInterval(id);
+      return;
+    }
+
     window.cancelAnimationFrame(id);
   }
-};
+}
 
 module.exports = GameLoop;

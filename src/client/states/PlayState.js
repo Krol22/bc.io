@@ -56,13 +56,37 @@ class PlayState extends HTMLElement {
     this.onStart();
   }
 
+  disconnectedCallback() {
+    this.networkManager.removeEventListener('GAME_STARTED', this.onGameStarted);
+    this.networkManager.removeEventListener('PLAYER_LEFT', this.onPlayerLeft);
+    this.networkManager.removeEventListener('GAME_ENDED', this.onGameEnded);
+    this.networkManager.removeEventListener('GAME_TICK', this.onGameTick);
+  }
+
   onStart() {
+    this.networkManager.addEventListener('PLAYER_LEFT', this.onPlayerLeft.bind(this));
+    this.networkManager.addEventListener('GAME_ENDED', this.onGameEnded.bind(this));
     this.networkManager.addEventListener('GAME_TICK', this.onGameTick.bind(this));
+  }
+
+  onPlayerLeft({ id }) {
+    const clientEntity = this.ecs.__getEntities().find((entity) => entity.getComponent('NETWORK').id === id);
+
+    this.ecs.removeEntity(clientEntity.id);
+
+    window.players = [...window.players.filter(player => {
+      return player.id !== id;
+    })];
   }
 
   onGameStarted() {
     console.log('started');
     clientGameLoop.start(this.update);
+  }
+
+  onGameEnded() {
+    const appRoot = document.querySelector('#game-root');
+    appRoot.innerHTML = '<lobby-state from-game="true"></lobby-state>'
   }
 
   onGameTick(serverEntities) {
@@ -90,6 +114,8 @@ class PlayState extends HTMLElement {
       this.networkManager.sendClientEvent('CLIENT_EVENT', { event: MOVE_UP });
     } else if (this.inputManager.keys[DOWN].isDown) {
       this.networkManager.sendClientEvent('CLIENT_EVENT', { event: MOVE_DOWN });
+    } else if (this.inputManager.keys[32].isDown) {
+      this.networkManager.sendClientEvent('GAME_END');
     }
 
     this.ecs.update();
@@ -98,6 +124,7 @@ class PlayState extends HTMLElement {
   render() {
     return `
       <section class="play">
+        <h3>Press SPACE to end game</h3>
         <canvas
           class="canvas"
           id="canvas"

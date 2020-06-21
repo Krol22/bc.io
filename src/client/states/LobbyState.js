@@ -29,6 +29,7 @@ class LobbyState extends HTMLElement {
     const join = this.getAttribute('join');
     // #TODO remove this later -> it's only for testing purposes
     const roomId = this.getAttribute('roomId');
+    const fromGame = this.getAttribute('from-game');
 
     if (roomId) {
       const userName = localStorage.getItem('userName');
@@ -58,20 +59,32 @@ class LobbyState extends HTMLElement {
 
     this.networkManager = new NetworkManager(window.playerSocket);
 
-    this.networkManager.addEventListener(PLAYER_CONNECTED, this.onPlayerConnected.bind(this));
+    if (!fromGame) {
+      this.networkManager.addEventListener(PLAYER_CONNECTED, this.onPlayerConnected.bind(this));
+    }
+    
     this.networkManager.addEventListener(PLAYER_JOINED, this.onPlayerConnected.bind(this));
     this.networkManager.addEventListener(PLAYER_LEFT, this.onPlayerLeft.bind(this));
     this.networkManager.addEventListener('ERROR', this.onConnectionError.bind(this));
-
     this.networkManager.addEventListener('GAME_STARTED', this.onGameStarted.bind(this));
 
+    if (fromGame) {
+      this.players = [...window.players];
+    }
+
     this.render();
+    
+    if (fromGame) {
+      const connectingBox = document.querySelector('#lobby-connecting');
+      connectingBox.style.display = 'none';
+    }
   }
 
   disconnectedCallback() {
     this.networkManager.removeEventListener(PLAYER_CONNECTED, this.onPlayerConnected);
     this.networkManager.removeEventListener(PLAYER_JOINED, this.onPlayerJoined);
     this.networkManager.removeEventListener(PLAYER_LEFT, this.onPlayerJoined);
+    this.networkManager.removeEventListener('GAME_STARTED', this.onGameStarted);
   }
 
   onGameStarted() {
@@ -165,7 +178,7 @@ class LobbyState extends HTMLElement {
           <h2>Lobby</h2>
         </div>
         <div class="users nes-container with-title">
-          <p class="title">Room: ${this.roomId} players</p>
+          <h3>Players: </h3>
           <lobby-players players=${JSON.stringify(this.players)}></lobby-players>
           <div class="start-btn">
             <button id="start-btn" class="nes-btn">Start</button>
