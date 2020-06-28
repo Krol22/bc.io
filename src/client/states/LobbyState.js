@@ -1,10 +1,9 @@
 import io from 'socket.io-client';
 
 import makeId from '../../common/misc/makeId';
+import networkEvents from '../../common/constants/networkEvents';
 
 import NetworkManager from '../networkManager';
-
-import networkEvents from '../../common/constants/networkEvents';
 
 const { PLAYER_CONNECTED, PLAYER_JOINED, PLAYER_LEFT } = networkEvents;
 
@@ -25,59 +24,13 @@ class LobbyState extends HTMLElement {
   }
 
   connectedCallback() {
-    const random = this.getAttribute('random');
-    const join = this.getAttribute('join');
-    // #TODO remove this later -> it's only for testing purposes
-    const roomId = this.getAttribute('roomId');
-    const fromGame = this.getAttribute('from-game');
-
-    if (roomId) {
-      const userName = localStorage.getItem('userName');
-      window.history.replaceState({ url: roomId }, '', roomId);
-
-      // eslint-disable-next-line no-undef
-      const address = `${process.env.SERVER}/?room=${roomId}&uname=${userName}`;
-      window.playerSocket = io(address);
-
-      this.roomId = roomId;
-
-    } else if (random) {
-      const roomId = makeId(6);
-      const userName = localStorage.getItem('userName');
-
-      window.history.replaceState({ url: roomId }, '', roomId);
-
-      // eslint-disable-next-line no-undef
-      const address = `${process.env.SERVER}/?room=${roomId}&uname=${userName}`;
-
-      window.playerSocket = io(address);
-
-      this.roomId = roomId;
-    } else if (join) {
-      console.log('join');
-    }
-
-    this.networkManager = new NetworkManager(window.playerSocket);
-
-    if (!fromGame) {
-      this.networkManager.addEventListener(PLAYER_CONNECTED, this.onPlayerConnected.bind(this));
-    }
-    
-    this.networkManager.addEventListener(PLAYER_JOINED, this.onPlayerConnected.bind(this));
-    this.networkManager.addEventListener(PLAYER_LEFT, this.onPlayerLeft.bind(this));
-    this.networkManager.addEventListener('ERROR', this.onConnectionError.bind(this));
-    this.networkManager.addEventListener('GAME_STARTED', this.onGameStarted.bind(this));
-
-    if (fromGame) {
-      this.players = [...window.players];
-    }
-
     this.render();
 
-    if (fromGame) {
-      const connectingBox = document.querySelector('#lobby-connecting');
-      connectingBox.style.display = 'none';
-    }
+    this.elements = {};
+    this.elements.connectingBox = document.querySelector('#lobby-connecting');
+    this.elements.lobby = document.querySelector('.lobby');
+
+    const userName = localStorage.getItem('userName');
 
     document.querySelector('#link').addEventListener('click', () => {
       copyToClipboard(`${window.location.href}`);
@@ -88,11 +41,61 @@ class LobbyState extends HTMLElement {
       appRoot.innerHTML = '<play-state></play-state>';
     });
 
-    const modal = document.querySelector('user-name-modal');
-    modal.setAttribute('opened', true);
-    modal.onSubmitClick = (val) => {
-      console.log(val);
-    };
+    if (!userName) {
+      const userNameModal = this.querySelector('user-name-modal');
+      userNameModal.setAttribute('opened', true);  
+      userNameModal.onSubmitClick = newUserName => {
+        localStorage.setItem('userName', newUserName);
+        this.connectToServer();
+      };
+
+      return;
+    }
+
+    this.connectToServer();
+  }
+
+  connectToServer() {
+    const isRandom = !!this.getAttribute('random');
+
+    //#TODO -> this should be in external state
+    const isReturningFromGame = !!this.getAttribute('from-game');
+
+    const userName = localStorage.getItem('userName');
+
+    let roomId = this.getAttribute('roomId');
+
+    // #TODO -> this will be removed in future versions
+    if (isRandom || !roomId) {
+      roomId = makeId(6);
+    }
+
+    window.history.replaceState({ url: roomId }, '', roomId);
+
+    // eslint-disable-next-line no-undef
+    const address = `${process.env.SERVER}/?room=${roomId}&uname=${userName}`;
+    window.playerSocket = io(address);
+
+    this.networkManager = new NetworkManager(window.playerSocket);
+
+    if (!isReturningFromGame) {
+      this.networkManager.addEventListener(PLAYER_CONNECTED, this.onPlayerConnected.bind(this));
+    }
+
+    this.networkManager.addEventListener(PLAYER_JOINED, this.onPlayerConnected.bind(this));
+    this.networkManager.addEventListener(PLAYER_LEFT, this.onPlayerLeft.bind(this));
+    this.networkManager.addEventListener('ERROR', this.onConnectionError.bind(this));
+    this.networkManager.addEventListener('GAME_STARTED', this.onGameStarted.bind(this));
+
+    if (isReturningFromGame) {
+      this.players = [...window.players];
+
+      this.showLobby();
+
+      return;
+    }
+
+    this.elements.connectingBox.classList.add('lobby_connecting--visible');
   }
 
   disconnectedCallback() {
@@ -102,12 +105,18 @@ class LobbyState extends HTMLElement {
     this.networkManager.removeEventListener('GAME_STARTED', this.onGameStarted);
   }
 
-  onGameStarted() {
-    const appRoot = document.querySelector('#game-root');
-    appRoot.innerHTML = '<play-state started="started"></play-state>';
+  showLobby() {
+    this.elements.lobby.style.display = 'block';
   }
 
-  onPlayerJoined() {
+  onPlayerConnected({ players }) {
+    this.elements.connectingBox.classList.remove('lobby_connecting--visible');
+    this.players = players;
+
+    window.players = [...this.players];
+
+    this.renderPlayers();
+    this.showLobby();
   }
 
   onPlayerLeft({ id }) {
@@ -120,16 +129,14 @@ class LobbyState extends HTMLElement {
     this.renderPlayers();
   }
 
-  onPlayerConnected({ players }) {
-    this.players = players;
-    window.players = [...this.players];
-
-    this.renderPlayers();
-  }
-
   onConnectionError() {
     const appRoot = document.querySelector('#game-root');
     appRoot.innerHTML = '<menu-state></menu-state>';
+  }
+
+  onGameStarted() {
+    const appRoot = document.querySelector('#game-root');
+    appRoot.innerHTML = '<play-state started="started"></play-state>';
   }
 
   renderPlayers() {
@@ -160,15 +167,23 @@ class LobbyState extends HTMLElement {
           bottom: 0;
           z-index: 1000;
           background-color: #fff;
-          display: flex;
+          display: none;
           justify-content: center;
           align-items: center;
           animation: scale 2s infinite ease-in-out;
         }
 
+        .lobby_connecting--visible {
+          display: flex;
+        }
+
         .lobby_connecting h1 {
           transform: rotate(15deg);
           animation: rotate 2.5s infinite ease-in-out;
+        }
+
+        .lobby {
+          display: none;
         }
 
         .lobby_game-link {
@@ -182,14 +197,17 @@ class LobbyState extends HTMLElement {
         }
 
       </style>
+      <user-name-modal></user-name-modal>
+
+      <div id="lobby-connecting" class="lobby_connecting">
+        <h1> Connecting </h1>
+      </div>
       <section class="lobby">
-        <user-name-modal></user-name-modal>
-        <div id="lobby-connecting" class="lobby_connecting">
-          <h1> Connecting </h1>
-        </div>
+
         <div class="lobby-title">
           <h2>Lobby</h2>
         </div>
+
         <div class="users nes-container with-title">
           <h3>Players: </h3>
           <lobby-players players=${JSON.stringify(this.players)}></lobby-players>
@@ -202,8 +220,8 @@ class LobbyState extends HTMLElement {
         </div>
       </section>
     `;
-
   }
+
 }
 
 customElements.define('lobby-state', LobbyState);

@@ -127,10 +127,6 @@ class MenuState extends HTMLElement {
 
       </style>
       <section class="menu">
-        <game-modal>
-          <div slot="modal-content">Test123</div>
-        </game-modal>
-
         <h1>BC.io</h1>
         <div class="nes-field">
           <label for="name_field">Name</label>
