@@ -5,7 +5,7 @@ import networkEvents from '../../common/constants/networkEvents';
 
 import NetworkManager from '../networkManager';
 
-const { PLAYER_CONNECTED, PLAYER_JOINED, PLAYER_LEFT } = networkEvents;
+const { PLAYER_CONNECTED, PLAYER_JOINED, PLAYER_LEFT, ERROR, GAME_STARTED } = networkEvents;
 
 const copyToClipboard = str => {
   const el = document.createElement('textarea');
@@ -84,8 +84,8 @@ class LobbyState extends HTMLElement {
 
     this.networkManager.addEventListener(PLAYER_JOINED, this.onPlayerConnected.bind(this));
     this.networkManager.addEventListener(PLAYER_LEFT, this.onPlayerLeft.bind(this));
-    this.networkManager.addEventListener('ERROR', this.onConnectionError.bind(this));
-    this.networkManager.addEventListener('GAME_STARTED', this.onGameStarted.bind(this));
+    this.networkManager.addEventListener(ERROR, this.onConnectionError.bind(this));
+    this.networkManager.addEventListener(GAME_STARTED, this.onGameStarted.bind(this));
 
     if (isReturningFromGame) {
       this.players = [...window.players];
@@ -102,7 +102,7 @@ class LobbyState extends HTMLElement {
     this.networkManager.removeEventListener(PLAYER_CONNECTED, this.onPlayerConnected);
     this.networkManager.removeEventListener(PLAYER_JOINED, this.onPlayerJoined);
     this.networkManager.removeEventListener(PLAYER_LEFT, this.onPlayerJoined);
-    this.networkManager.removeEventListener('GAME_STARTED', this.onGameStarted);
+    this.networkManager.removeEventListener(GAME_STARTED, this.onGameStarted);
   }
 
   showLobby() {
