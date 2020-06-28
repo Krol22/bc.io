@@ -1,7 +1,8 @@
 class ServerNetworkManager {
-  constructor(entities, systems) {
+  constructor(entities, systems, game) {
     this.entities = entities;
     this.systems = systems;
+    this.game = game;
 
     this.players = [];
   }
@@ -14,10 +15,31 @@ class ServerNetworkManager {
     });
   }
 
+  startGame() {
+    this.players.forEach(({ socket }) => {
+      socket.emit('GAME_STARTED');
+    });
+  }
+
+  endGame() {
+    this.players.forEach(({ socket }) => {
+      socket.emit('GAME_ENDED');  
+    });
+  }
+
   addPlayer(newPlayer) {
     const { id, socket } = newPlayer;
 
     this.players.push(newPlayer);
+
+    socket.on('GAME_START', () => {
+      console.log('test23');
+      this.game.start();
+    });
+
+    socket.on('GAME_END', () => {
+      this.game.end();
+    });
 
     socket.on('CLIENT_EVENT', (({event}) => {
       const entity = this.entities.find(entity => entity.getComponent('NETWORK').id === id);

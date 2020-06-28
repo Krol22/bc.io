@@ -49,6 +49,6 @@ class PhysicsSystem extends EcsSystem {
       physicsComponent.ay = 0;
     });
   }
-};
+}
 
-module.exports = PhysicsSystem;
+export default PhysicsSystem;

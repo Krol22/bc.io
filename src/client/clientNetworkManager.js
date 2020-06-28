@@ -50,8 +50,6 @@ export default class ClientNetworkManager {
       this.ecs.addEntity(newEntity);
     });
 
-    document.querySelector('#message').innerHTML = 'Connected';
-
     this.connected = true;
   }
 

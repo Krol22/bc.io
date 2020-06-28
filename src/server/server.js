@@ -1,7 +1,7 @@
 import express from 'express';
 import socketio from 'socket.io';
 
-import Game from './game';
+import Game from './newGame';
 
 const PORT = process.env.PORT || 3000;
 
@@ -14,7 +14,15 @@ console.log(`Listening on port ${PORT}`);
 
 io.on('connection', socket => {
   const roomId = socket.handshake.query.room;
+  const uname = socket.handshake.query.uname;
+
   const randomPlayerId = Math.floor(Math.random() * 10000);
+
+  if (rooms[roomId] && rooms[roomId].players.length > 3) {
+    // should disconnect from socket
+    socket.emit('ERROR', { type: 'FULL_ROOM' });
+    return;
+  }
 
   if (!rooms[roomId]) {
     rooms[roomId] = {
@@ -27,6 +35,7 @@ io.on('connection', socket => {
 
   const newPlayer = {
     id: randomPlayerId,
+    userName: uname,
     socket,
   };
 
@@ -36,9 +45,9 @@ io.on('connection', socket => {
 
   rooms[roomId].game.addPlayer(newPlayer);
 
-  console.log(Object.keys(rooms).map(room => `${room} ${rooms[room].players.map(player => player.id)}`));
+  console.log(Object.keys(rooms).map(room => `${room} ${rooms[room].players.map(player => player.id + ' ' + player.userName)}`));
 
-  const connectedPlayers = rooms[roomId].players.map(player => ({ id: player.id }));
+  const connectedPlayers = rooms[roomId].players.map(player => ({ id: player.id, userName: player.userName }));
 
   // send player data to client;
   socket.emit('PLAYER_CONNECTED', { id: randomPlayerId, players: connectedPlayers });
@@ -51,10 +60,3 @@ io.on('connection', socket => {
     io.to(roomId).emit('PLAYER_LEFT', { id: randomPlayerId });
   });
 });
-
-setInterval(() => {
-  Object.keys(rooms).forEach(key => {
-    const { game } = rooms[key];
-    game.loop();
-  });
-}, 10);
