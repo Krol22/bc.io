@@ -70,17 +70,17 @@ class LobbyState extends HTMLElement {
       roomId = makeId(6);
     }
 
-    window.history.replaceState({ url: roomId }, '', roomId);
-
-    // eslint-disable-next-line no-undef
-    const address = `${process.env.SERVER}/?room=${roomId}&uname=${userName}`;
-    window.playerSocket = io(address);
-
-    this.networkManager = new NetworkManager(window.playerSocket);
-
     if (!isReturningFromGame) {
+      window.history.replaceState({ url: roomId }, '', roomId);
+
+      // eslint-disable-next-line no-undef
+      const address = `${process.env.SERVER}/?room=${roomId}&uname=${userName}`;
+      window.playerSocket = io(address);
+
+      this.networkManager = new NetworkManager(window.playerSocket);
       this.networkManager.addEventListener(PLAYER_CONNECTED, this.onPlayerConnected.bind(this));
     }
+    this.networkManager = this.networkManager || new NetworkManager(window.playerSocket);
 
     this.networkManager.addEventListener(PLAYER_JOINED, this.onPlayerConnected.bind(this));
     this.networkManager.addEventListener(PLAYER_LEFT, this.onPlayerLeft.bind(this));
@@ -89,6 +89,7 @@ class LobbyState extends HTMLElement {
 
     if (isReturningFromGame) {
       this.players = [...window.players];
+      this.renderPlayers();
 
       this.showLobby();
 
