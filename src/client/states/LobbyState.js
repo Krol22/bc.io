@@ -73,11 +73,26 @@ class LobbyState extends HTMLElement {
     }
 
     this.render();
-    
+
     if (fromGame) {
       const connectingBox = document.querySelector('#lobby-connecting');
       connectingBox.style.display = 'none';
     }
+
+    document.querySelector('#link').addEventListener('click', () => {
+      copyToClipboard(`${window.location.href}`);
+    });
+
+    document.querySelector('#start-btn').addEventListener('click', () => {
+      const appRoot = document.querySelector('#game-root');
+      appRoot.innerHTML = '<play-state></play-state>';
+    });
+
+    const modal = document.querySelector('user-name-modal');
+    modal.setAttribute('opened', true);
+    modal.onSubmitClick = (val) => {
+      console.log(val);
+    };
   }
 
   disconnectedCallback() {
@@ -93,7 +108,6 @@ class LobbyState extends HTMLElement {
   }
 
   onPlayerJoined() {
-    
   }
 
   onPlayerLeft({ id }) {
@@ -101,28 +115,26 @@ class LobbyState extends HTMLElement {
       return player.id !== id;
     })];
 
-    this.render();
-
-    const connectingBox = document.querySelector('#lobby-connecting');
-    connectingBox.style.display = 'none';
-
     window.players = [...this.players];
+
+    this.renderPlayers();
   }
 
   onPlayerConnected({ players }) {
     this.players = players;
-
-    this.render();
-
-    const connectingBox = document.querySelector('#lobby-connecting');
-    connectingBox.style.display = 'none';
-
     window.players = [...this.players];
+
+    this.renderPlayers();
   }
 
-  onConnectionError({ type }) {
+  onConnectionError() {
     const appRoot = document.querySelector('#game-root');
     appRoot.innerHTML = '<menu-state></menu-state>';
+  }
+
+  renderPlayers() {
+    const lobbyPlayersElement = this.querySelector('lobby-players');
+    lobbyPlayersElement.setAttribute('players', JSON.stringify(this.players));
   }
 
   render() {
@@ -171,6 +183,7 @@ class LobbyState extends HTMLElement {
 
       </style>
       <section class="lobby">
+        <user-name-modal></user-name-modal>
         <div id="lobby-connecting" class="lobby_connecting">
           <h1> Connecting </h1>
         </div>
@@ -190,14 +203,6 @@ class LobbyState extends HTMLElement {
       </section>
     `;
 
-    document.querySelector('#link').addEventListener('click', () => {
-      copyToClipboard(`${window.location.href}`);
-    });
-
-    document.querySelector('#start-btn').addEventListener('click', () => {
-      const appRoot = document.querySelector('#game-root');
-      appRoot.innerHTML = '<play-state></play-state>';
-    });
   }
 }
 

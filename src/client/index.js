@@ -23,6 +23,7 @@ import './states/LobbyState';
 
 import './ui/lobby/players';
 import './ui/modal/modal';
+import './ui/modal/userName.modal';
 
 let socket;
 

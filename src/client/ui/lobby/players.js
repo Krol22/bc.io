@@ -5,6 +5,7 @@ class Players extends HTMLElement {
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'players') {
+      console.log(newValue);
       this.players = JSON.parse(newValue);
       this.render();
     }

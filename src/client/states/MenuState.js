@@ -1,3 +1,5 @@
+import validator from 'validator';
+
 class MenuState extends HTMLElement {
   connectedCallback() {
     this.innerHTML = this.render();
@@ -38,6 +40,40 @@ class MenuState extends HTMLElement {
 
       nameField.value = userName;
     }
+
+    nameField.addEventListener('change', event => {
+      const requireErrorField = document.querySelector('.name_field_err_required');
+      const patternErrorField = document.querySelector('.name_field_err_pattern');
+
+      requireErrorField.style.display = 'none';
+      patternErrorField.style.display = 'none';
+
+      nameField.classList.toggle('is-error', false);
+
+      const value = event.target.value;
+
+      if (validator.isEmpty(value)) {
+        nameField.style.animation = 'shake .2s ease-in-out';
+        nameField.classList.toggle('is-error', true);
+        requireErrorField.style.display = 'block';
+
+        setTimeout(() => {
+          nameField.style.animation = '';
+        }, 200);
+        return;
+      }
+
+      if (!validator.isAlphanumeric(value)) {
+        nameField.style.animation = 'shake .2s ease-in-out';
+        nameField.classList.toggle('is-error', true);
+        patternErrorField.style.display = 'block';
+
+        setTimeout(() => {
+          nameField.style.animation = '';
+        }, 200);
+        return;
+      }
+    });
   }
 
   render() {
@@ -56,6 +92,11 @@ class MenuState extends HTMLElement {
           margin: 2rem 0;  
         }
 
+        .nes-field .error {
+          display: none;
+          color: #ce372b;
+        }
+
         .menu_buttons {
           display: flex;
           justify-content: center;
@@ -68,6 +109,22 @@ class MenuState extends HTMLElement {
           width: 60%;
           display: block;
         }
+
+        @keyframes shake {
+          25% {
+            transform: translateX(-20px);
+          }
+          50% {
+            transform: translateX(20px);
+          }
+          75% {
+            transform: translateX(-20px);
+          }
+          100% {
+            transform: translateX(20px);
+          }
+        }
+
       </style>
       <section class="menu">
         <game-modal>
@@ -78,6 +135,8 @@ class MenuState extends HTMLElement {
         <div class="nes-field">
           <label for="name_field">Name</label>
           <input type="text" id="name_field" class="nes-input">
+          <div class="error name_field_err_required">* Field is required!</div>
+          <div class="error name_field_err_pattern">* Use letters and numbers only!</div>
         </div>
         <!--
           <div class="nes-field">
