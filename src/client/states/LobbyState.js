@@ -201,6 +201,7 @@ class LobbyState extends HTMLElement {
 
       <div id="lobby-connecting" class="lobby_connecting">
         <h1> Connecting </h1>
+        <span class="nes-text">(Heroku...)</span>
       </div>
       <section class="lobby">
 
