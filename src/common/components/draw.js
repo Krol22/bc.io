@@ -1,4 +1,4 @@
-const { EcsComponent } = require('@krol22/ecs');
+import { EcsComponent } from '@krol22/ecs';
 
 class DrawComponent extends EcsComponent {
   constructor(x, y, width, height, image) {
@@ -15,4 +15,4 @@ class DrawComponent extends EcsComponent {
   }
 }
 
-module.exports = DrawComponent;
+export default DrawComponent;

@@ -4,8 +4,8 @@ class NetworkComponent extends EcsComponent {
   constructor(id) {
     super('NETWORK');
 
-    this.id = id
+    this.id = id;
   }
-};
+}
 
-module.exports = NetworkComponent;
+export default NetworkComponent;

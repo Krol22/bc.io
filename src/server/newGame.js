@@ -4,8 +4,11 @@ import GameLoop from '../common/engine/GameLoop';
 
 import NetworkComponent from '../common/components/network';
 import PhysicsComponent from '../common/components/physics';
+import MapComponent from '../common/components/map';
 
 import PhysicsSystem from './systems/physicsSystem';
+
+import { loadMap } from './map/map.utils';
 
 class ServerNetworkManager {
   constructor(onGameStart, onGameEnd) {
@@ -108,6 +111,21 @@ class Game {
 
     this.players.forEach(({ socket }) => {
       socket.emit('GAME_STARTED');
+    });
+
+    const { number, map } = loadMap('map01');
+  
+    this.ecs.addEntity(new EcsEntity([
+      new MapComponent(number, map),
+      new NetworkComponent(444),
+    ]));
+
+    this.players.forEach(({ socket }) => {
+      socket.emit('MAP_LOAD', {
+        number, map, networkId: 444,
+      });
+
+      console.log('emit new map');
     });
   }
 

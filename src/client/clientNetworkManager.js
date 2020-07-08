@@ -26,7 +26,8 @@ export default class ClientNetworkManager {
 
   onGameTick(serverEntities) {
     const systems = this.ecs.__getSystems();  
-    
+
+
     systems.forEach(system => {
       if(system.onServerTick) {
         system.onServerTick(serverEntities);
