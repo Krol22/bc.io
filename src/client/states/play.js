@@ -2,18 +2,17 @@ import { ECS, EcsEntity } from '@krol22/ecs';
 
 import InputManager from '../inputManager';
 import NetworkManager from '../networkManager';
+import NetworkLayer from '../networkLayer';
 
 import GameLoop from '../../common/engine/GameLoop';
 
-import DrawSystem from '../systems/draw';
-import MapSystem from '../systems/map';
+import DrawSystem from '../features/draw.system';
+import MapSystem from '../features/map/map.system';
 
 import DrawComponent from '../../common/components/draw';
 import NetworkComponent from '../../common/components/network';
 
-import NetworkLayer from '../networkLayer';
-
-import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } from '../../common/networkActions';
+import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } from '../../common/constants/playerActions';
 
 const LEFT = 37;
 const UP = 38;

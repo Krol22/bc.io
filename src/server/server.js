@@ -1,9 +1,7 @@
 import express from 'express';
 import socketio from 'socket.io';
 
-import Game from './newGame';
-
-import { loadMap } from './map/map.utils';
+import Game from './game';
 
 const PORT = process.env.PORT || 3000;
 
@@ -13,9 +11,6 @@ const io = socketio(server);
 
 const rooms = {};
 console.log(`Listening on port ${PORT}`);
-
-console.log(__dirname);
-console.log(loadMap('map01'));
 
 io.on('connection', socket => {
   const roomId = socket.handshake.query.room;

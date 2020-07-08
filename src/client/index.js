@@ -4,9 +4,9 @@ import sprite from './assets/tanks.png';
 
 import 'nes.css/css/nes.min.css';
 
-import './states/MenuState';
-import './states/PlayState';
-import './states/LobbyState';
+import './states/menu';
+import './states/play';
+import './states/lobby';
 
 import './ui/lobby/players';
 import './ui/modal/modal';

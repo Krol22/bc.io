@@ -1,6 +1,6 @@
-const { EcsComponent } = require('@krol22/ecs');
+import { EcsComponent } from '@krol22/ecs';
 
-class AnimationComponent extends EcsComponent {
+export default class AnimationComponent extends EcsComponent {
   constructor(currentFrame, name, animations) {
     super('ANIMATION');
 
@@ -9,5 +9,3 @@ class AnimationComponent extends EcsComponent {
     this.animations = animations;
   }
 }
-
-module.exports = AnimationComponent;

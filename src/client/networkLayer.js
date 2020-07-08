@@ -1,4 +1,4 @@
-import mapReducer from './systems/map.reducer';
+import mapReducer from './features/map/map.reducer';
 
 import networkEvents from '../common/constants/networkEvents';
 
