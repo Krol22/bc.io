@@ -33,6 +33,18 @@ class MapSystem extends EcsSystem {
           this.context.drawImage(window.assets.sprite, 17 * 16, 2 * 16, 16, 16, 0, 0, 32, 32);
           this.context.restore();
           break;
+        case 'METAL':
+          this.context.save();
+          this.context.translate(x * 32, y * 32);
+          this.context.drawImage(window.assets.sprite, 16 * 16, 1 * 16, 16, 16, 0, 0, 32, 32);
+          this.context.restore();
+          break;
+        case 'ICE':
+          this.context.save();
+          this.context.translate(x * 32, y * 32);
+          this.context.drawImage(window.assets.sprite, 18 * 16, 2 * 16, 16, 16, 0, 0, 32, 32);
+          this.context.restore();
+          break;
 
         }
 

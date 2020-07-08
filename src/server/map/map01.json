@@ -24,8 +24,8 @@
       "y": 3,
       "type": "BLOCK"
     }, {
-      "x": 1,
-      "y": 3,
+      "x": 0,
+      "y": 4,
       "type": "BLOCK"
     }, {
       "x": 1,
@@ -56,9 +56,41 @@
       "y": 2,
       "type": "GRASS"
     }, {
+      "x": 4,
+      "y": 2,
+      "type": "GRASS"
+    }, {
+      "x": 1,
+      "y": 3,
+      "type": "METAL"
+    }, {
+      "x": 2,
+      "y": 3,
+      "type": "METAL"
+    }, {
       "x": 3,
       "y": 3,
-      "type": "GRASS"
+      "type": "METAL"
+    }, {
+      "x": 4,
+      "y": 3,
+      "type": "METAL"
+    }, {
+      "x": 1,
+      "y": 4,
+      "type": "ICE"
+    }, {
+      "x": 2,
+      "y": 4,
+      "type": "ICE"
+    }, {
+      "x": 3,
+      "y": 4,
+      "type": "ICE"
+    }, {
+      "x": 4,
+      "y": 4,
+      "type": "ICE"
     }
   ]
 }
