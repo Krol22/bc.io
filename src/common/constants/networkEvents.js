@@ -8,6 +8,8 @@ const networkEvents = {
   GAME_STARTED: 'GAME_STARTED',
   GAME_END: 'GAME_END',
   GAME_ENDED: 'GAME_ENDED',
+  MAP_LOAD: 'MAP_LOAD',
+  MAP_CHANGE: 'MAP_CHANGE',
   ERROR: 'ERROR',
 };
 

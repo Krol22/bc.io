@@ -1,6 +1,6 @@
 import { EcsSystem } from '@krol22/ecs';
 
-import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } from '../../common/networkActions';
+import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } from '../../common/constants/playerActions';
 
 class PhysicsSystem extends EcsSystem { 
   constructor() {

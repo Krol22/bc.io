@@ -2,15 +2,17 @@ import { ECS, EcsEntity } from '@krol22/ecs';
 
 import InputManager from '../inputManager';
 import NetworkManager from '../networkManager';
+import NetworkLayer from '../networkLayer';
 
 import GameLoop from '../../common/engine/GameLoop';
 
-import DrawSystem from '../systems/draw';
+import DrawSystem from '../features/draw.system';
+import MapSystem from '../features/map/map.system';
 
 import DrawComponent from '../../common/components/draw';
 import NetworkComponent from '../../common/components/network';
 
-import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } from '../../common/networkActions';
+import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, TEST_DESTROY_MAP } from '../../common/constants/playerActions';
 
 const LEFT = 37;
 const UP = 38;
@@ -35,7 +37,12 @@ class PlayState extends HTMLElement {
     this.innerHTML = this.render();
 
     const canvas = document.querySelector('#canvas');
-    this.ecs.addSystem(new DrawSystem(canvas.getContext('2d')));
+    const context = canvas.getContext('2d');
+
+    context.imageSmoothingEnabled = false;
+
+    this.ecs.addSystem(new DrawSystem(context));
+    this.ecs.addSystem(new MapSystem(context));
 
     window.players.forEach(player => {
       const newEntity = new EcsEntity([
@@ -61,12 +68,15 @@ class PlayState extends HTMLElement {
     this.networkManager.removeEventListener('PLAYER_LEFT', this.onPlayerLeft);
     this.networkManager.removeEventListener('GAME_ENDED', this.onGameEnded);
     this.networkManager.removeEventListener('GAME_TICK', this.onGameTick);
+
   }
 
   onStart() {
     this.networkManager.addEventListener('PLAYER_LEFT', this.onPlayerLeft.bind(this));
     this.networkManager.addEventListener('GAME_ENDED', this.onGameEnded.bind(this));
     this.networkManager.addEventListener('GAME_TICK', this.onGameTick.bind(this));
+
+    this.networkLayer = new NetworkLayer(this.networkManager, this.ecs); 
   }
 
   onPlayerLeft({ id }) {
@@ -80,18 +90,17 @@ class PlayState extends HTMLElement {
   }
 
   onGameStarted() {
-    console.log('started');
     clientGameLoop.start(this.update);
   }
 
   onGameEnded() {
     const appRoot = document.querySelector('#game-root');
-    appRoot.innerHTML = '<lobby-state from-game="true"></lobby-state>'
+    appRoot.innerHTML = '<lobby-state from-game="true"></lobby-state>';
   }
 
   onGameTick(serverEntities) {
     const systems = this.ecs.__getSystems();  
-    
+
     systems.forEach(system => {
       if(system.onServerTick) {
         system.onServerTick(serverEntities);
@@ -116,6 +125,8 @@ class PlayState extends HTMLElement {
       this.networkManager.sendClientEvent('CLIENT_EVENT', { event: MOVE_DOWN });
     } else if (this.inputManager.keys[32].isDown) {
       this.networkManager.sendClientEvent('GAME_END');
+    } else if (this.inputManager.keys[65].isDown) {
+      this.networkManager.sendClientEvent('CLIENT_EVENT', { event: TEST_DESTROY_MAP });
     }
 
     this.ecs.update();
