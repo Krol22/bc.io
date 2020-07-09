@@ -7,6 +7,24 @@ class MapSystem extends EcsSystem {
     this.context = context;
   }
 
+  onServerTick(serverEntities) {
+    const mapServerEntity = serverEntities.find(entity => entity.components.find(({ _type }) => _type === 'MAP'));
+
+    if (!mapServerEntity) {
+      return;
+    }
+
+    const networkId = mapServerEntity.components.find(({ _type }) => _type === 'NETWORK').id;
+    const serverMapComponent = mapServerEntity.components.find(({ _type }) => _type === 'MAP');
+
+    const mapEntity = this.systemEntities.find(( entity ) => entity.hasComponent('NETWORK') && entity.getComponent('NETWORK').id === networkId);
+
+    const mapComponent = mapEntity.getComponent('MAP');
+
+    mapComponent.map = [...serverMapComponent.map];
+    mapComponent.number = serverMapComponent.number;
+  }
+
   tick() {
     this.systemEntities.forEach(entity => {
       const mapComponent = entity.getComponent('MAP');

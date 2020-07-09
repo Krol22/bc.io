@@ -7,6 +7,7 @@ import PhysicsComponent from '../common/components/physics';
 import MapComponent from '../common/components/map';
 
 import PhysicsSystem from './systems/physicsSystem';
+import MapTestSystem from './map/map.system.test';
 
 import ServerNetworkManager from './serverNetworkManager';
 
@@ -43,6 +44,9 @@ class Game {
     this.ecs = new ECS();
 
     const physicsSystem = new PhysicsSystem();
+    const mapTestSystem = new MapTestSystem();
+
+    this.ecs.addSystem(mapTestSystem);
     this.ecs.addSystem(physicsSystem);
 
     this.players.forEach(player => {

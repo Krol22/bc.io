@@ -12,7 +12,7 @@ import MapSystem from '../features/map/map.system';
 import DrawComponent from '../../common/components/draw';
 import NetworkComponent from '../../common/components/network';
 
-import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } from '../../common/constants/playerActions';
+import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, TEST_DESTROY_MAP } from '../../common/constants/playerActions';
 
 const LEFT = 37;
 const UP = 38;
@@ -125,6 +125,8 @@ class PlayState extends HTMLElement {
       this.networkManager.sendClientEvent('CLIENT_EVENT', { event: MOVE_DOWN });
     } else if (this.inputManager.keys[32].isDown) {
       this.networkManager.sendClientEvent('GAME_END');
+    } else if (this.inputManager.keys[65].isDown) {
+      this.networkManager.sendClientEvent('CLIENT_EVENT', { event: TEST_DESTROY_MAP });
     }
 
     this.ecs.update();
