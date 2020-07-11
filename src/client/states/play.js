@@ -1,4 +1,5 @@
 import { ECS, EcsEntity } from '@krol22/ecs';
+import * as PIXI from 'pixi.js';
 
 import InputManager from '../inputManager';
 import NetworkManager from '../networkManager';
@@ -36,13 +37,12 @@ class PlayState extends HTMLElement {
   connectedCallback() {
     this.innerHTML = this.render();
 
-    const canvas = document.querySelector('#canvas');
-    const context = canvas.getContext('2d');
+    document.querySelector('#canvas').appendChild(window.app.view);
 
-    context.imageSmoothingEnabled = false;
+    window.app.stage.addChild(PIXI.Sprite.from('../assets/tanks.png'));
 
-    this.ecs.addSystem(new DrawSystem(context));
-    this.ecs.addSystem(new MapSystem(context));
+    this.ecs.addSystem(new DrawSystem());
+    // this.ecs.addSystem(new MapSystem());
 
     window.players.forEach(player => {
       const newEntity = new EcsEntity([
@@ -136,12 +136,7 @@ class PlayState extends HTMLElement {
     return `
       <section class="play">
         <h3>Press SPACE to end game</h3>
-        <canvas
-          class="canvas"
-          id="canvas"
-          width="600"
-          height="600">
-        </canvas>
+        <div class="canvas" id="canvas"></div>
       </section>
     `;
   }
