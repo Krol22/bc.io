@@ -6,7 +6,8 @@ import NetworkLayer from '../networkLayer';
 
 import GameLoop from '../../common/engine/GameLoop';
 
-import DrawSystem from '../features/draw.system.new';
+import DrawSystem from '../features/render/draw.system';
+import AnimationSystem from '../features/render/animation.system';
 
 import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, TEST_DESTROY_MAP } from '../../common/constants/playerActions';
 import generatePlayer from '../features/player/player.generator';
@@ -35,6 +36,7 @@ class PlayState extends HTMLElement {
     const drawSystem = new DrawSystem();
 
     this.ecs.addSystem(drawSystem);
+    this.ecs.addSystem(new AnimationSystem());
     // this.ecs.addSystem(new MapSystem());
 
     window.players.forEach(player => this.ecs.addEntity(generatePlayer(player.id)));

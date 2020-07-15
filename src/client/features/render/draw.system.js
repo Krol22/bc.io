@@ -20,7 +20,7 @@ class DrawSystem extends EcsSystem {
 
       const { sprite } = drawComponent;
 
-      sprite.anchor.set(0.5, 0.5);
+      sprite.scale.set(2);
 
       this.stage.addChild(sprite);
     });
@@ -40,6 +40,7 @@ class DrawSystem extends EcsSystem {
       const serverPhysicsComponent = serverEntity.components.find(({ _type }) => _type === 'PHYSICS');
 
       const { sprite } = clientEntity.getComponent('DRAW');
+      const animationComponent = clientEntity.getComponent('ANIMATION');
 
       sprite.x = serverPhysicsComponent.x;
       sprite.y = serverPhysicsComponent.y;
@@ -48,12 +49,17 @@ class DrawSystem extends EcsSystem {
 
       if (vy < 0) {
         sprite.rotation = 0;
+        animationComponent.nextAnimation = 'MOVE';
       } else if (vy > 0) {
         sprite.rotation = Math.PI;
+        animationComponent.nextAnimation = 'MOVE';
       } else if (vx > 0) {
         sprite.rotation = Math.PI / 2;
+        animationComponent.nextAnimation = 'MOVE';
       } else if (vx < 0) {
         sprite.rotation = 3 * Math.PI / 2;
+        animationComponent.nextAnimation = 'MOVE';
+      } else {
       }
     });
   }

@@ -13,7 +13,9 @@ const generatePlayer = (networkId) => {
   const frameHeight = 16;
 
   const animationComponent = new AnimationComponent({
-    currentAnimation: 'IDLE',
+    currentAnimation: {
+      name: 'IDLE', 
+    },
     frames: [
       new PIXI.Texture(spriteSheet, new PIXI.Rectangle(0 * frameWidth, 0 * frameHeight, frameWidth, frameHeight)),
       new PIXI.Texture(spriteSheet, new PIXI.Rectangle(1 * frameWidth, 0 * frameHeight, frameWidth, frameHeight)),
@@ -26,7 +28,7 @@ const generatePlayer = (networkId) => {
       MOVE: {
         frames: [0, 1],
         loop: true,
-        time: 200,
+        time: 2,
       },
     }
   });
