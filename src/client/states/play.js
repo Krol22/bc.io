@@ -1,5 +1,4 @@
-import { ECS, EcsEntity } from '@krol22/ecs';
-import * as PIXI from 'pixi.js';
+import { ECS } from '@krol22/ecs';
 
 import InputManager from '../inputManager';
 import NetworkManager from '../networkManager';
@@ -7,13 +6,10 @@ import NetworkLayer from '../networkLayer';
 
 import GameLoop from '../../common/engine/GameLoop';
 
-import DrawSystem from '../features/draw.system';
-import MapSystem from '../features/map/map.system';
-
-import DrawComponent from '../../common/components/draw';
-import NetworkComponent from '../../common/components/network';
+import DrawSystem from '../features/draw.system.new';
 
 import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, TEST_DESTROY_MAP } from '../../common/constants/playerActions';
+import generatePlayer from '../features/player/player.generator';
 
 const LEFT = 37;
 const UP = 38;
@@ -36,22 +32,12 @@ class PlayState extends HTMLElement {
 
   connectedCallback() {
     this.innerHTML = this.render();
+    const drawSystem = new DrawSystem();
 
-    document.querySelector('#canvas').appendChild(window.app.view);
-
-    window.app.stage.addChild(PIXI.Sprite.from('../assets/tanks.png'));
-
-    this.ecs.addSystem(new DrawSystem());
+    this.ecs.addSystem(drawSystem);
     // this.ecs.addSystem(new MapSystem());
 
-    window.players.forEach(player => {
-      const newEntity = new EcsEntity([
-        new NetworkComponent(player.id),
-        new DrawComponent(0, 0, 32, 32, window.assets.sprite),
-      ]);
-
-      this.ecs.addEntity(newEntity);
-    });
+    window.players.forEach(player => this.ecs.addEntity(generatePlayer(player.id)));
 
     if (!this.getAttribute('started')) {
       this.networkManager.sendClientEvent('GAME_START', {});
@@ -60,6 +46,7 @@ class PlayState extends HTMLElement {
       this.onGameStarted();
     }
 
+    drawSystem.initializePixi(); 
     this.onStart();
   }
 

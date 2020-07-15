@@ -14,9 +14,8 @@ import './ui/lobby/players';
 import './ui/modal/modal';
 import './ui/modal/userName.modal';
 
-window.app = new PIXI.Application();
 
-window.app.loader.add('tanks', './assets/tanks.png').load(() => {
+PIXI.Loader.shared.add('tanks', sprite).load(() => {
   const appRoot = document.querySelector('#game-root');
 
   let roomId = window.location.pathname.split('/')[1];
