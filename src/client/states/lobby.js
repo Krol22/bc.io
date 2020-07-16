@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 import makeId from '../../common/misc/makeId';
 import networkEvents from '../../common/constants/networkEvents';
 
-import NetworkManager from '../networkManager';
+import NetworkManager from '../features/network/networkManager';
 
 const { PLAYER_CONNECTED, PLAYER_JOINED, PLAYER_LEFT, ERROR, GAME_STARTED } = networkEvents;
 
@@ -176,11 +176,13 @@ class LobbyState extends HTMLElement {
 
         .lobby_connecting--visible {
           display: flex;
+          flex-direction: column;
         }
 
         .lobby_connecting h1 {
           transform: rotate(15deg);
           animation: rotate 2.5s infinite ease-in-out;
+          margin-bottom: 40px;
         }
 
         .lobby {
@@ -202,7 +204,7 @@ class LobbyState extends HTMLElement {
 
       <div id="lobby-connecting" class="lobby_connecting">
         <h1> Connecting </h1>
-        <span class="nes-text">(Heroku...)</span>
+        <div class="nes-text">(Heroku...)</div>
       </div>
       <section class="lobby">
 

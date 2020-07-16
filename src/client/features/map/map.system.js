@@ -1,74 +1,46 @@
 import { EcsSystem } from '@krol22/ecs';
 
+import PixiManager from '../render/pixi.manager';
+
+import * as PIXI from 'pixi.js';
+
+const frameWidth = 16;
+const frameHeight = 16;
+
+const mapElements = {
+  BLOCK: new PIXI.Rectangle(16 * frameWidth, 0 * frameHeight, frameWidth, frameHeight),
+  WATER: new PIXI.Rectangle(16 * frameWidth, 2 * frameHeight, frameWidth, frameHeight),
+  GRASS: new PIXI.Rectangle(17 * frameWidth, 2 * frameHeight, frameWidth, frameHeight),
+  METAL: new PIXI.Rectangle(16 * frameWidth, 1 * frameHeight, frameWidth, frameHeight),
+  ICE: new PIXI.Rectangle(18 * frameWidth, 2 * frameHeight, frameWidth, frameHeight),
+};
+
 class MapSystem extends EcsSystem {
-  constructor(context) {
+  constructor() {
     super(['MAP']);
-
-    this.context = context;
   }
 
-  onServerTick(serverEntities) {
-    const mapServerEntity = serverEntities.find(entity => entity.components.find(({ _type }) => _type === 'MAP'));
+  onEntityAdded() {
+    const spriteSheet = new PIXI.BaseTexture.from(PIXI.Loader.shared.resources['tanks'].url);
 
-    if (!mapServerEntity) {
-      return;
-    }
+    this.systemEntities.forEach(mapEntity => {
 
-    const networkId = mapServerEntity.components.find(({ _type }) => _type === 'NETWORK').id;
-    const serverMapComponent = mapServerEntity.components.find(({ _type }) => _type === 'MAP');
+      const { map } = mapEntity.getComponent('MAP');
 
-    const mapEntity = this.systemEntities.find(( entity ) => entity.hasComponent('NETWORK') && entity.getComponent('NETWORK').id === networkId);
+      map.forEach(({ x, y, type }) => {
+        const texture = new PIXI.Texture(spriteSheet, mapElements[type]);
 
-    const mapComponent = mapEntity.getComponent('MAP');
+        const mapSprite = new PIXI.Sprite(texture);
 
-    mapComponent.map = [...serverMapComponent.map];
-    mapComponent.number = serverMapComponent.number;
-  }
+        mapSprite.x = x * frameWidth;
+        mapSprite.y = y * frameWidth;
 
-  tick() {
-    this.systemEntities.forEach(entity => {
-      const mapComponent = entity.getComponent('MAP');
-
-      mapComponent.map.forEach(({x, y, type}) => {
-
-        switch(type) {
-
-        case 'BLOCK':
-          this.context.save();
-          this.context.translate(x * 32, y * 32);
-          this.context.drawImage(window.assets.sprite, 16 * 16, 0 * 16, 16, 16, 0, 0, 32, 32);
-          this.context.restore();
-          break;
-        case 'WATER':
-          this.context.save();
-          this.context.translate(x * 32, y * 32);
-          this.context.drawImage(window.assets.sprite, 16 * 16, 2 * 16, 16, 16, 0, 0, 32, 32);
-          this.context.restore();
-          break;
-        case 'GRASS':
-          this.context.save();
-          this.context.translate(x * 32, y * 32);
-          this.context.drawImage(window.assets.sprite, 17 * 16, 2 * 16, 16, 16, 0, 0, 32, 32);
-          this.context.restore();
-          break;
-        case 'METAL':
-          this.context.save();
-          this.context.translate(x * 32, y * 32);
-          this.context.drawImage(window.assets.sprite, 16 * 16, 1 * 16, 16, 16, 0, 0, 32, 32);
-          this.context.restore();
-          break;
-        case 'ICE':
-          this.context.save();
-          this.context.translate(x * 32, y * 32);
-          this.context.drawImage(window.assets.sprite, 18 * 16, 2 * 16, 16, 16, 0, 0, 32, 32);
-          this.context.restore();
-          break;
-
-        }
-
+        PixiManager.stage.addChild(mapSprite);
       });
     });
   }
+
+  tick() {}
 }
 
 export default MapSystem;

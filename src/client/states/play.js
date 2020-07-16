@@ -1,18 +1,17 @@
-import { ECS, EcsEntity } from '@krol22/ecs';
+import { ECS } from '@krol22/ecs';
 
 import InputManager from '../inputManager';
-import NetworkManager from '../networkManager';
-import NetworkLayer from '../networkLayer';
+import NetworkManager from '../features/network/networkManager';
+import ReducerManager from '../features/network/reducerManager';
 
 import GameLoop from '../../common/engine/GameLoop';
 
-import DrawSystem from '../features/draw.system';
+import DrawSystem from '../features/render/draw.system';
 import MapSystem from '../features/map/map.system';
-
-import DrawComponent from '../../common/components/draw';
-import NetworkComponent from '../../common/components/network';
+import AnimationSystem from '../features/render/animation.system';
 
 import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, TEST_DESTROY_MAP } from '../../common/constants/playerActions';
+import generatePlayer from '../features/player/player.generator';
 
 const LEFT = 37;
 const UP = 38;
@@ -35,23 +34,15 @@ class PlayState extends HTMLElement {
 
   connectedCallback() {
     this.innerHTML = this.render();
+    const drawSystem = new DrawSystem();
+    const mapSystem = new MapSystem();
 
-    const canvas = document.querySelector('#canvas');
-    const context = canvas.getContext('2d');
+    this.ecs.addSystem(drawSystem);
+    this.ecs.addSystem(new AnimationSystem());
+    this.ecs.addSystem(mapSystem);
+    // this.ecs.addSystem(new MapSystem());
 
-    context.imageSmoothingEnabled = false;
-
-    this.ecs.addSystem(new DrawSystem(context));
-    this.ecs.addSystem(new MapSystem(context));
-
-    window.players.forEach(player => {
-      const newEntity = new EcsEntity([
-        new NetworkComponent(player.id),
-        new DrawComponent(0, 0, 32, 32, window.assets.sprite),
-      ]);
-
-      this.ecs.addEntity(newEntity);
-    });
+    window.players.forEach(player => this.ecs.addEntity(generatePlayer(player.id)));
 
     if (!this.getAttribute('started')) {
       this.networkManager.sendClientEvent('GAME_START', {});
@@ -59,6 +50,8 @@ class PlayState extends HTMLElement {
     } else {
       this.onGameStarted();
     }
+
+    drawSystem.initializePixi(); 
 
     this.onStart();
   }
@@ -76,7 +69,7 @@ class PlayState extends HTMLElement {
     this.networkManager.addEventListener('GAME_ENDED', this.onGameEnded.bind(this));
     this.networkManager.addEventListener('GAME_TICK', this.onGameTick.bind(this));
 
-    this.networkLayer = new NetworkLayer(this.networkManager, this.ecs); 
+    this.reducerManager = new ReducerManager(this.networkManager, this.ecs); 
   }
 
   onPlayerLeft({ id }) {
@@ -136,12 +129,7 @@ class PlayState extends HTMLElement {
     return `
       <section class="play">
         <h3>Press SPACE to end game</h3>
-        <canvas
-          class="canvas"
-          id="canvas"
-          width="600"
-          height="600">
-        </canvas>
+        <div class="canvas" id="canvas"></div>
       </section>
     `;
   }

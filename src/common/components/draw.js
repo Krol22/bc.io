@@ -1,16 +1,16 @@
 import { EcsComponent } from '@krol22/ecs';
 
+import * as PIXI from 'pixi.js';
+
 export default class DrawComponent extends EcsComponent {
-  constructor(x, y, width, height, image) {
+  constructor(x, y, texture) {
     super('DRAW');
 
-    this.x = x;
-    this.y = y;
-    this.width = width;
-    this.height = height;
+    this.sprite = new PIXI.Sprite(texture);
 
-    this.dir = 0;
+    this.sprite.x = x;
+    this.sprite.y = y;
 
-    this.image = image;
+    this.sprite.anchor.set(0.5, 0.5);
   }
 }
