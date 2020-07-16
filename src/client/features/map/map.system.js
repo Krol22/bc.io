@@ -1,5 +1,7 @@
 import { EcsSystem } from '@krol22/ecs';
 
+import PixiManager from '../render/pixi.manager';
+
 class MapSystem extends EcsSystem {
   constructor(context) {
     super(['MAP']);

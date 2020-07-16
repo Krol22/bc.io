@@ -1,6 +1,6 @@
 import { EcsSystem } from '@krol22/ecs';
 
-import * as PIXI from 'pixi.js';
+import PixiManager from './pixi.manager';
 
 class DrawSystem extends EcsSystem {
   constructor() {
@@ -8,13 +8,6 @@ class DrawSystem extends EcsSystem {
   }
 
   initializePixi() {
-    this.renderer = PIXI.autoDetectRenderer(800, 600, {
-      antialias: false,
-      transparent: false,
-    });
-
-    this.stage = new PIXI.Container();
-
     this.systemEntities.forEach(entity => {
       const drawComponent = entity.getComponent('DRAW');
 
@@ -22,10 +15,10 @@ class DrawSystem extends EcsSystem {
 
       sprite.scale.set(2);
 
-      this.stage.addChild(sprite);
+      PixiManager.stage.addChild(sprite);
     });
 
-    document.querySelector('#canvas').appendChild(this.renderer.view);
+    document.querySelector('#canvas').appendChild(PixiManager.renderer.view);
   }
 
   onServerTick(serverEntities) {
@@ -59,12 +52,14 @@ class DrawSystem extends EcsSystem {
       } else if (vx < 0) {
         sprite.rotation = 3 * Math.PI / 2;
         animationComponent.play('MOVE');
+      } else {
+        animationComponent.play('IDLE');
       }
     });
   }
 
   tick() {
-    this.renderer.render(this.stage);
+    PixiManager.render();
   }
 }
 

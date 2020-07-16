@@ -15,6 +15,7 @@ const generatePlayer = (networkId) => {
   const animationComponent = new AnimationComponent({
     currentAnimation: {
       name: 'IDLE', 
+      frame: 0,
     },
     frames: [
       new PIXI.Texture(spriteSheet, new PIXI.Rectangle(0 * frameWidth, 0 * frameHeight, frameWidth, frameHeight)),

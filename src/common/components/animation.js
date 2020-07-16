@@ -8,7 +8,6 @@ import { EcsComponent } from '@krol22/ecs';
     time: 100,
     frame: 1,
   },
-  nextAnimation: 'IDLE',
   frames: [
     new PIXI.Texture(spriteSheet, 4 * frameWidth, 4 * frameHeight, frameWidth, frameHeight),
     new PIXI.Texture(spriteSheet, 5 * frameWidth, 4 * frameHeight, frameWidth, frameHeight),
