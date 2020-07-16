@@ -1,8 +1,8 @@
 import { ECS } from '@krol22/ecs';
 
 import InputManager from '../inputManager';
-import NetworkManager from '../networkManager';
-import NetworkLayer from '../networkLayer';
+import NetworkManager from '../features/network/networkManager';
+import ReducerManager from '../features/network/reducerManager';
 
 import GameLoop from '../../common/engine/GameLoop';
 
@@ -69,7 +69,7 @@ class PlayState extends HTMLElement {
     this.networkManager.addEventListener('GAME_ENDED', this.onGameEnded.bind(this));
     this.networkManager.addEventListener('GAME_TICK', this.onGameTick.bind(this));
 
-    this.networkLayer = new NetworkLayer(this.networkManager, this.ecs); 
+    this.reducerManager = new ReducerManager(this.networkManager, this.ecs); 
   }
 
   onPlayerLeft({ id }) {

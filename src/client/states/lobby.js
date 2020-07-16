@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 import makeId from '../../common/misc/makeId';
 import networkEvents from '../../common/constants/networkEvents';
 
-import NetworkManager from '../networkManager';
+import NetworkManager from '../features/network/networkManager';
 
 const { PLAYER_CONNECTED, PLAYER_JOINED, PLAYER_LEFT, ERROR, GAME_STARTED } = networkEvents;
 

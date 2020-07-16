@@ -1,7 +1,7 @@
-import networkEvents from '../common/constants/networkEvents';
+import networkEvents from '../../../common/constants/networkEvents';
 
 /**
- * NetworkManager class responsible for communication between client <-> server
+ * NetworkManager class - responsible for communication between client <-> server
 */
 export default class NetworkManager {
   /**
