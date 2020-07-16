@@ -7,6 +7,7 @@ import NetworkLayer from '../networkLayer';
 import GameLoop from '../../common/engine/GameLoop';
 
 import DrawSystem from '../features/render/draw.system';
+import MapSystem from '../features/map/map.system';
 import AnimationSystem from '../features/render/animation.system';
 
 import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, TEST_DESTROY_MAP } from '../../common/constants/playerActions';
@@ -34,9 +35,11 @@ class PlayState extends HTMLElement {
   connectedCallback() {
     this.innerHTML = this.render();
     const drawSystem = new DrawSystem();
+    const mapSystem = new MapSystem();
 
     this.ecs.addSystem(drawSystem);
     this.ecs.addSystem(new AnimationSystem());
+    this.ecs.addSystem(mapSystem);
     // this.ecs.addSystem(new MapSystem());
 
     window.players.forEach(player => this.ecs.addEntity(generatePlayer(player.id)));
@@ -49,6 +52,7 @@ class PlayState extends HTMLElement {
     }
 
     drawSystem.initializePixi(); 
+
     this.onStart();
   }
 

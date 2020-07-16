@@ -13,8 +13,6 @@ class DrawSystem extends EcsSystem {
 
       const { sprite } = drawComponent;
 
-      sprite.scale.set(2);
-
       PixiManager.stage.addChild(sprite);
     });
 

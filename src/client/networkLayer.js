@@ -32,6 +32,9 @@ class NetworkLayer {
 
       // TODO: here I could handle removing event.
       this.ecs.addEntity(newEntity);
+
+      // TODO: this should be implemented in ECS.
+      this.ecs.__getSystems().forEach(system => system.onEntityAdded && system.onEntityAdded());
     });
   }
 

@@ -45,11 +45,11 @@ class PhysicsSystem extends EcsSystem {
       physicsComponent.vx *= 0.9;
       physicsComponent.vy *= 0.9;
 
-      if (physicsComponent.vx <= 0.1) {
+      if (physicsComponent.vx <= 0.1 && physicsComponent.vx >= -0.1) {
         physicsComponent.vx = 0;
       }
 
-      if (physicsComponent.vy <= 0.1) {
+      if (physicsComponent.vy <= 0.1 && physicsComponent.vy >= -0.1) {
         physicsComponent.vy = 0;
       }
 
