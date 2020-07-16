@@ -7,30 +7,16 @@ class AnimationSystem extends EcsSystem {
 
   tick() {
     this.systemEntities.forEach(entity => {
-      const { frames, animations, currentAnimation, nextAnimation } = entity.getComponent('ANIMATION');
-
-      const currentAnimationData = animations[currentAnimation.name];
+      const { frames, animations, currentAnimation } = entity.getComponent('ANIMATION');
       const { sprite } = entity.getComponent('DRAW');
 
-      if (!currentAnimationData) {
-        throw new Error(`No animation named ${currentAnimation.name} defined for entity ${entity.id}`);
-      }
+      const currentAnimationData = animations[currentAnimation.name];
+
+      sprite.texture = frames[currentAnimation.frame];
 
       if (currentAnimation.ended) {
         return;
       }
-
-
-      // TODO: this should be handeled by some kind of 'playAnimation' function.
-      if (nextAnimation && currentAnimation.name !== nextAnimation) {
-        currentAnimation.name = nextAnimation;
-        currentAnimation.time = 0;
-        currentAnimation.frame = animations[nextAnimation].frames[0];
-        currentAnimation.ended = false;
-
-        sprite.texture = frames[currentAnimation.frame];
-        return;
-      } 
 
       // It's static 1 sprite,
       if (typeof currentAnimationData.time === 'undefined') {

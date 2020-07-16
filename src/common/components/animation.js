@@ -33,4 +33,21 @@ export default class AnimationComponent extends EcsComponent {
     this.frames = frames;
     this.animations = animations;
   }
+
+  play(animationName) {
+    if (!this.animations[animationName]) {
+      throw new Error(`No animation named ${animationName}!`);
+    }
+
+    if (this.currentAnimation.name === animationName) {
+      return;
+    }
+
+    this.currentAnimation = {
+      name: animationName,
+      time: 0,
+      frame: this.animations[animationName].frames[0],
+      ended: false,
+    };
+  }
 }

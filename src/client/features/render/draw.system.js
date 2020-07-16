@@ -49,17 +49,16 @@ class DrawSystem extends EcsSystem {
 
       if (vy < 0) {
         sprite.rotation = 0;
-        animationComponent.nextAnimation = 'MOVE';
+        animationComponent.play('MOVE');
       } else if (vy > 0) {
         sprite.rotation = Math.PI;
-        animationComponent.nextAnimation = 'MOVE';
+        animationComponent.play('MOVE');
       } else if (vx > 0) {
         sprite.rotation = Math.PI / 2;
-        animationComponent.nextAnimation = 'MOVE';
+        animationComponent.play('MOVE');
       } else if (vx < 0) {
         sprite.rotation = 3 * Math.PI / 2;
-        animationComponent.nextAnimation = 'MOVE';
-      } else {
+        animationComponent.play('MOVE');
       }
     });
   }
