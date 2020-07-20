@@ -32,7 +32,7 @@ export default class ServerNetworkManager {
 
       const systemsWithNetworkActions = 
         this.ecs.__getSystems().filter(system => {
-          return !!system.networkActions[event];
+          return system.networkActions[event];
         });
 
       systemsWithNetworkActions.forEach(system => system.networkActions[event](entity));
@@ -46,7 +46,6 @@ export default class ServerNetworkManager {
   sendClientInfo(players) {
     players.forEach(player => {
       const { socket } = player;
-
       socket.emit('GAME_TICK', this.ecs.__getEntities());
     });
   }

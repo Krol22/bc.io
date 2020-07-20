@@ -31,28 +31,28 @@ class DrawSystem extends EcsSystem {
       const serverPhysicsComponent = serverEntity.components.find(({ _type }) => _type === 'PHYSICS');
 
       const { sprite } = clientEntity.getComponent('DRAW');
-      const animationComponent = clientEntity.getComponent('ANIMATION');
+      // const animationComponent = clientEntity.getComponent('ANIMATION');
 
       sprite.x = serverPhysicsComponent.x;
       sprite.y = serverPhysicsComponent.y;
 
-      const { vx, vy } = serverPhysicsComponent;
+      // const { vx, vy } = serverPhysicsComponent;
 
-      if (vy < 0) {
-        sprite.rotation = 0;
-        animationComponent.play('MOVE');
-      } else if (vy > 0) {
-        sprite.rotation = Math.PI;
-        animationComponent.play('MOVE');
-      } else if (vx > 0) {
-        sprite.rotation = Math.PI / 2;
-        animationComponent.play('MOVE');
-      } else if (vx < 0) {
-        sprite.rotation = 3 * Math.PI / 2;
-        animationComponent.play('MOVE');
-      } else {
-        animationComponent.play('IDLE');
-      }
+      // if (vy < 0) {
+        // sprite.rotation = 0;
+        // animationComponent.play('MOVE');
+      // } else if (vy > 0) {
+        // sprite.rotation = Math.PI;
+        // animationComponent.play('MOVE');
+      // } else if (vx > 0) {
+        // sprite.rotation = Math.PI / 2;
+        // animationComponent.play('MOVE');
+      // } else if (vx < 0) {
+        // sprite.rotation = 3 * Math.PI / 2;
+        // animationComponent.play('MOVE');
+      // } else {
+        // animationComponent.play('IDLE');
+      // }
     });
   }
 

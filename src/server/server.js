@@ -1,3 +1,5 @@
+import 'regenerator-runtime';
+
 import express from 'express';
 import socketio from 'socket.io';
 

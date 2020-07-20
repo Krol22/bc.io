@@ -3,15 +3,17 @@ import { ECS, EcsEntity } from '@krol22/ecs';
 import GameLoop from '../common/engine/GameLoop';
 
 import NetworkComponent from '../common/components/network';
-import PhysicsComponent from '../common/components/physics';
 import MapComponent from '../common/components/map';
 
-import PhysicsSystem from './systems/physicsSystem';
 import MapTestSystem from './map/map.system.test';
+import PhysicsSystem from './features/physics/physics.system.new';
 
 import ServerNetworkManager from './serverNetworkManager';
+import generatePlayer from './features/physics/player.generator';
 
 import { loadMap } from './map/map.utils';
+
+import './features/physics/box2d.manager';
 
 const serverGameLoop = new GameLoop(30);
 
@@ -50,10 +52,7 @@ class Game {
     this.ecs.addSystem(physicsSystem);
 
     this.players.forEach(player => {
-      const newEntity = new EcsEntity([
-        new PhysicsComponent(33 * this.players.length, 0),
-        new NetworkComponent(player.id)
-      ]);
+      const newEntity = generatePlayer(40, 40, 32, 32, player.id);
 
       this.ecs.addEntity(newEntity);
     });

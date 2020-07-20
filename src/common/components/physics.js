@@ -1,15 +1,23 @@
 const { EcsComponent } = require('@krol22/ecs');
 
 class PhysicsComponent extends EcsComponent {
-  constructor(x = 0, y = 0) {
+  constructor(body) {
     super('PHYSICS');
 
-    this.x = x;
-    this.y = y;
-    this.vx = 0;
-    this.vy = 0;
-    this.ax = 0;
-    this.ay = 0;
+    this.body = body;
+  }
+
+  toString() {
+    const physicsComponent = {
+      x: this.body.GetPosition().get_x(),
+      y: this.body.GetPosition().get_y(),
+      angle: this.body.GetAngle(),
+      ...this,
+    };
+
+    delete physicsComponent.body;
+
+    return JSON.stringify(physicsComponent);
   }
 }
 
