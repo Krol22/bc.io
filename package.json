@@ -21,7 +21,7 @@
     "@krol22/ecs": "^0.1.2",
     "common": "^0.2.5",
     "express": "^4.17.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "nes.css": "^2.3.0",
     "parcel": "^1.12.4",
     "regenerator-runtime": "^0.13.5",
