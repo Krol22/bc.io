@@ -14,6 +14,7 @@ import generatePlayer from './features/physics/player.generator';
 import { loadMap } from './map/map.utils';
 
 import './features/physics/box2d.manager';
+import { PLAYER_WIDTH, PLAYER_HEIGHT } from '../common/constants';
 
 const serverGameLoop = new GameLoop(30);
 
@@ -52,7 +53,7 @@ class Game {
     this.ecs.addSystem(physicsSystem);
 
     this.players.forEach(player => {
-      const newEntity = generatePlayer(40, 40, 32, 32, player.id);
+      const newEntity = generatePlayer(10, 10, PLAYER_WIDTH / 2, PLAYER_HEIGHT / 2, player.id);
 
       this.ecs.addEntity(newEntity);
     });

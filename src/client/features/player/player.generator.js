@@ -6,11 +6,10 @@ import DrawComponent from '../../../common/components/draw';
 import NetworkComponent from '../../../common/components/network';
 import AnimationComponent from '../../../common/components/animation';
 
+import { FRAME_WIDTH, FRAME_HEIGHT } from '../../../common/constants';
+
 const generatePlayer = (networkId) => {
   const spriteSheet = new PIXI.BaseTexture.from(PIXI.Loader.shared.resources['tanks'].url);
-
-  const frameWidth = 16;
-  const frameHeight = 16;
 
   const animationComponent = new AnimationComponent({
     currentAnimation: {
@@ -18,8 +17,14 @@ const generatePlayer = (networkId) => {
       frame: 0,
     },
     frames: [
-      new PIXI.Texture(spriteSheet, new PIXI.Rectangle(0 * frameWidth, 0 * frameHeight, frameWidth, frameHeight)),
-      new PIXI.Texture(spriteSheet, new PIXI.Rectangle(1 * frameWidth, 0 * frameHeight, frameWidth, frameHeight)),
+      new PIXI.Texture(
+        spriteSheet,
+        new PIXI.Rectangle(0 * FRAME_WIDTH, 0 * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT),
+      ),
+      new PIXI.Texture(
+        spriteSheet,
+        new PIXI.Rectangle(1 * FRAME_WIDTH, 0 * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT),
+      ),
     ],
     animations: {
       IDLE: {
@@ -36,7 +41,7 @@ const generatePlayer = (networkId) => {
 
   const networkComponent = new NetworkComponent(networkId);
   const drawComponent = new DrawComponent(0, 0,
-    new PIXI.Texture(spriteSheet, new PIXI.Rectangle(0 * frameWidth, 0 * frameHeight, frameWidth, frameHeight)),
+    new PIXI.Texture(spriteSheet, new PIXI.Rectangle(0 * FRAME_WIDTH, 0 * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT)),
   );
 
   return new EcsEntity([

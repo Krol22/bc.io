@@ -2,6 +2,8 @@ import { EcsSystem } from '@krol22/ecs';
 
 import PixiManager from './pixi.manager';
 
+import { PIXEL_PER_METER, GAME_SCALE } from '../../../common/constants';
+
 class DrawSystem extends EcsSystem {
   constructor() {
     super(['DRAW']);
@@ -33,8 +35,8 @@ class DrawSystem extends EcsSystem {
       const { sprite } = clientEntity.getComponent('DRAW');
       // const animationComponent = clientEntity.getComponent('ANIMATION');
 
-      sprite.x = serverPhysicsComponent.x;
-      sprite.y = serverPhysicsComponent.y;
+      sprite.x = serverPhysicsComponent.x * PIXEL_PER_METER * GAME_SCALE;
+      sprite.y = serverPhysicsComponent.y * PIXEL_PER_METER * GAME_SCALE;
 
       // const { vx, vy } = serverPhysicsComponent;
 

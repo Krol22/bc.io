@@ -4,15 +4,14 @@ import PixiManager from '../render/pixi.manager';
 
 import * as PIXI from 'pixi.js';
 
-const frameWidth = 16;
-const frameHeight = 16;
+import { FRAME_WIDTH, FRAME_HEIGHT, GAME_SCALE } from '../../../common/constants';
 
 const mapElements = {
-  BLOCK: new PIXI.Rectangle(16 * frameWidth, 0 * frameHeight, frameWidth, frameHeight),
-  WATER: new PIXI.Rectangle(16 * frameWidth, 2 * frameHeight, frameWidth, frameHeight),
-  GRASS: new PIXI.Rectangle(17 * frameWidth, 2 * frameHeight, frameWidth, frameHeight),
-  METAL: new PIXI.Rectangle(16 * frameWidth, 1 * frameHeight, frameWidth, frameHeight),
-  ICE: new PIXI.Rectangle(18 * frameWidth, 2 * frameHeight, frameWidth, frameHeight),
+  BLOCK: new PIXI.Rectangle(16 * FRAME_WIDTH, 0 * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT),
+  WATER: new PIXI.Rectangle(16 * FRAME_WIDTH, 2 * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT),
+  GRASS: new PIXI.Rectangle(17 * FRAME_WIDTH, 2 * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT),
+  METAL: new PIXI.Rectangle(16 * FRAME_WIDTH, 1 * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT),
+  ICE: new PIXI.Rectangle(18 * FRAME_WIDTH, 2 * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT),
 };
 
 class MapSystem extends EcsSystem {
@@ -32,8 +31,10 @@ class MapSystem extends EcsSystem {
 
         const mapSprite = new PIXI.Sprite(texture);
 
-        mapSprite.x = x * frameWidth;
-        mapSprite.y = y * frameWidth;
+        mapSprite.x = x * FRAME_WIDTH * GAME_SCALE;
+        mapSprite.y = y * FRAME_WIDTH * GAME_SCALE;
+
+        mapSprite.scale.set(GAME_SCALE, GAME_SCALE);
 
         PixiManager.stage.addChild(mapSprite);
       });
