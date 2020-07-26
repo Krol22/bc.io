@@ -1,4 +1,5 @@
 import { EcsSystem } from '@krol22/ecs';
+import { Body } from 'matter-js';
 
 import Box2DManager from './box2d.manager';
 
@@ -10,24 +11,36 @@ export default class PhysicsSystem extends EcsSystem {
 
     this.networkActions = {
       ['MOVE_UP']: entity => {
-        const { body } = entity.getComponent('PHYSICS');
-        const vel = new Box2DManager.Box2D.b2Vec2(0, -PLAYER_SPEED);
-        body.SetLinearVelocity(vel);
+        const physics = entity.getComponent('PHYSICS');
+        const entityBody = Box2DManager.engine.world.bodies.find(({ id }) => id === physics.body); 
+
+        Body.setVelocity(entityBody, { x: 0, y: -0 });
+        Body.applyForce(entityBody, entityBody.position, { x: 0, y: -PLAYER_SPEED });
+        physics.direction = 0;
       },
       ['MOVE_DOWN']: entity => {
-        const { body } = entity.getComponent('PHYSICS');
-        const vel = new Box2DManager.Box2D.b2Vec2(0, PLAYER_SPEED);
-        body.SetLinearVelocity(vel);
+        const physics = entity.getComponent('PHYSICS');
+        const entityBody = Box2DManager.engine.world.bodies.find(({ id }) => id === physics.body); 
+
+        Body.setVelocity(entityBody, { x: 0, y: 0 });
+        Body.applyForce(entityBody, entityBody.position, { x: 0, y: PLAYER_SPEED });
+        physics.direction = 2;
       },
       ['MOVE_LEFT']: entity => {
-        const { body } = entity.getComponent('PHYSICS');
-        const vel = new Box2DManager.Box2D.b2Vec2(-PLAYER_SPEED, 0);
-        body.SetLinearVelocity(vel);
+        const physics = entity.getComponent('PHYSICS');
+        const entityBody = Box2DManager.engine.world.bodies.find(({ id }) => id === physics.body); 
+
+        Body.setVelocity(entityBody, { x: -0, y: 0 });
+        Body.applyForce(entityBody, entityBody.position, { x: -PLAYER_SPEED, y: 0 });
+        physics.direction = 3;
       },
       ['MOVE_RIGHT']: entity => {
-        const { body } = entity.getComponent('PHYSICS');
-        const vel = new Box2DManager.Box2D.b2Vec2(PLAYER_SPEED, 0);
-        body.SetLinearVelocity(vel);
+        const physics = entity.getComponent('PHYSICS');
+        const entityBody = Box2DManager.engine.world.bodies.find(({ id }) => id === physics.body); 
+
+        Body.setVelocity(entityBody, { x: 0, y: 0 });
+        Body.applyForce(entityBody, entityBody.position, { x: PLAYER_SPEED, y: 0 });
+        physics.direction = 1;
       },
     };   
   }
@@ -38,8 +51,18 @@ export default class PhysicsSystem extends EcsSystem {
     this.systemEntities.forEach(entity => {
       const physics = entity.getComponent('PHYSICS');
 
-      physics.x = physics.body.GetPosition().get_x();
-      physics.y = physics.body.GetPosition().get_y();
+      const entityBody = Box2DManager.engine.world.bodies.find(({ id }) => id === physics.body); 
+
+      physics.x = entityBody.position.x;
+      physics.y = entityBody.position.y;
+
+      physics.vx = entityBody.velocity.x;
+      physics.vy = entityBody.velocity.y;
+
+      physics.debug = {
+        render: entityBody.render,
+        vertices: entityBody.vertices.map(({ x, y }) => ({ x, y })),
+      }
     });
   }
 }

@@ -1,19 +1,16 @@
-import Box2D from '../../box2d_v2.3.1_min';
+import { Engine } from 'matter-js';
 
-const Box2DManager = {
-  initialize: async () => {
-    Box2DManager.Box2D = await Box2D();
-
-    const gravity = new Box2DManager.Box2D.b2Vec2(0, 0);
-
-    Box2DManager.world = new Box2DManager.Box2D.b2World(gravity);
+const MatterJsManager = {
+  initialize: () => {
+    MatterJsManager.engine = Engine.create();
+    MatterJsManager.engine.world.gravity.y = 0;
   },
 
   tick: (delta) => {
-    Box2DManager.world.Step(10, 2, 2);
+    Engine.update(MatterJsManager.engine, delta);
   }
 };
 
-Box2DManager.initialize();
+MatterJsManager.initialize();
 
-export default Box2DManager;
+export default MatterJsManager;

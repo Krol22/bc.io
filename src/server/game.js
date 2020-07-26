@@ -52,8 +52,8 @@ class Game {
     this.ecs.addSystem(mapTestSystem);
     this.ecs.addSystem(physicsSystem);
 
-    this.players.forEach(player => {
-      const newEntity = generatePlayer(10, 10, PLAYER_WIDTH / 2, PLAYER_HEIGHT / 2, player.id);
+    this.players.forEach((player, index) => {
+      const newEntity = generatePlayer(40 * index, 40 * index, 16, 16, player.id);
 
       this.ecs.addEntity(newEntity);
     });

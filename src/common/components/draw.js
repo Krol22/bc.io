@@ -12,8 +12,7 @@ export default class DrawComponent extends EcsComponent {
     this.sprite.x = x;
     this.sprite.y = y;
 
-    this.sprite.scale.set(GAME_SCALE, GAME_SCALE);
-
+    // this.sprite.scale.set(GAME_SCALE, GAME_SCALE);
     this.sprite.anchor.set(0.5, 0.5);
   }
 }
