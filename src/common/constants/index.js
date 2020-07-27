@@ -3,7 +3,7 @@ export const METER_PER_PIXEL = 1 / PIXEL_PER_METER;
 
 export const PLAYER_WIDTH = 1;
 export const PLAYER_HEIGHT = 1;
-export const PLAYER_SPEED = 2.5;
+export const PLAYER_SPEED = 0.001;
 
 export const GAME_SCALE = 2;
 

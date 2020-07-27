@@ -16,17 +16,10 @@ class DrawSystem extends EcsSystem {
 
       const { sprite } = drawComponent;
 
-      // PixiManager.stage.addChild(sprite);
+      PixiManager.stage.addChild(sprite);
       PixiManager.graphics = new PIXI.Graphics();
 
-      PixiManager.stage.addChild(PixiManager.graphics);
-
-      // if(entity.hasComponent('PHYSICS')) {
-        // const { debug } = entity.getComponent('PHYSICS');
-        // drawComponent.debugShape = new PIXI.Polygon(debug.vertices.map(({ x, y }) => ([x, y])).flat());
-//
-        // PixiManager.stage.addChild(drawComponent.debugShape);
-      // }
+      // PixiManager.stage.addChild(PixiManager.graphics);
     });
 
     document.querySelector('#canvas').appendChild(PixiManager.renderer.view);
@@ -46,22 +39,26 @@ class DrawSystem extends EcsSystem {
       const { sprite } = clientEntity.getComponent('DRAW');
       const animationComponent = clientEntity.getComponent('ANIMATION');
 
-      sprite.x = serverPhysicsComponent.x;
-      sprite.y = serverPhysicsComponent.y;
+      sprite.x = serverPhysicsComponent.x * GAME_SCALE;
+      sprite.y = serverPhysicsComponent.y * GAME_SCALE;
 
       const { vx, vy, direction } = serverPhysicsComponent;
 
       sprite.rotation = direction * Math.PI / 2;
 
-      if (vy < -0.01 && vy > 0.01 && vx > 0.01 && vx < -0.01) { 
+      if (vy < -0.01 || vy > 0.01 || vx > 0.01 || vx < -0.01) { 
         animationComponent.play('MOVE');
       } else {
         animationComponent.play('IDLE');
       }
 
       const { debug } = serverPhysicsComponent;
+
+      const points = debug.vertices.map(({x, y}) => ([x, y])).flat();
+      if (!points) {
+        return;
+      }
       PixiManager.graphics.beginFill(0xffff22);
-      const points = debug.vertices.map(({x, y}) => ([x, y])).flat()
       PixiManager.graphics.drawPolygon(points);
       PixiManager.graphics.endFill();
     });

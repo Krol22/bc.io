@@ -7,10 +7,10 @@ import NetworkComponent from '../../../common/components/network';
 import Box2DManager from './box2d.manager';
 
 const generatePlayer = (x, y, width, height, id) => {
-  console.log(width, height);
   const body = Bodies.rectangle(x, y, width, height, {
-    density: 10,
-    frictionAir: 0.2
+    inertia: Infinity,
+    frictionAir: 0.2,
+    friction: 0,
   });
 
   World.add(Box2DManager.engine.world, [body]);
