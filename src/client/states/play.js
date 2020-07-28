@@ -10,7 +10,10 @@ import DrawSystem from '../features/render/draw.system';
 import MapSystem from '../features/map/map.system';
 import AnimationSystem from '../features/render/animation.system';
 
+import PixiManager from '../features/render/pixi.manager';
+
 import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, TEST_DESTROY_MAP } from '../../common/constants/playerActions';
+import { GAME_SCALE } from '../../common/constants';
 import generatePlayer from '../features/player/player.generator';
 
 const LEFT = 37;
@@ -91,13 +94,24 @@ class PlayState extends HTMLElement {
     appRoot.innerHTML = '<lobby-state from-game="true"></lobby-state>';
   }
 
-  onGameTick(serverEntities) {
+  onGameTick({ entities: serverEntities, debug }) {
     const systems = this.ecs.__getSystems();  
 
     systems.forEach(system => {
       if(system.onServerTick) {
         system.onServerTick(serverEntities);
       } 
+    });
+
+    if (!process.env.DEBUG) {
+      return;
+    }
+
+    debug.forEach(({ vertices }) => {
+      const points = vertices.map(({ x, y }) => ([x * GAME_SCALE, y * GAME_SCALE])).flat();
+      PixiManager.graphics.lineStyle(1, 0xFF00FF);
+      PixiManager.graphics.drawPolygon(points);
+      PixiManager.graphics.endFill();
     });
   }
 

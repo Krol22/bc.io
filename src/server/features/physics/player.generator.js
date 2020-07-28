@@ -4,7 +4,7 @@ import { Bodies, World } from 'matter-js';
 import PhysicsComponent from '../../../common/components/physics';
 import NetworkComponent from '../../../common/components/network';
 
-import Box2DManager from './box2d.manager';
+import MatterManager from './matter.manager';
 
 const generatePlayer = (x, y, width, height, id) => {
   const body = Bodies.rectangle(x, y, width, height, {
@@ -13,7 +13,7 @@ const generatePlayer = (x, y, width, height, id) => {
     friction: 0,
   });
 
-  World.add(Box2DManager.engine.world, [body]);
+  World.add(MatterManager.engine.world, [body]);
 
   return new EcsEntity([
     new PhysicsComponent(body.id),

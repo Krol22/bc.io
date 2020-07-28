@@ -7,6 +7,8 @@ function loadMap(mapName) {
 
   const { number, map } = JSON.parse(mapData);  
 
+  map.forEach(element => {element.x += 10; element.y += 5});
+
   return {
     number, map,
   };

@@ -1,3 +1,5 @@
+import MatterManager from './features/physics/matter.manager';
+
 export default class ServerNetworkManager {
   constructor(onGameStart, onGameEnd) {
     this.players = [];
@@ -46,7 +48,17 @@ export default class ServerNetworkManager {
   sendClientInfo(players) {
     players.forEach(player => {
       const { socket } = player;
-      socket.emit('GAME_TICK', this.ecs.__getEntities());
+      const debug = [
+        ...MatterManager.engine.world.bodies.map(body => ({ 
+          render: body.render, 
+          vertices: body.vertices.map(({x, y}) => ({ x, y })),
+        })),
+      ];
+
+      socket.emit('GAME_TICK', {
+        entities: this.ecs.__getEntities(),
+        debug,
+      });
     });
   }
 }

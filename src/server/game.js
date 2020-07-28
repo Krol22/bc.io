@@ -5,7 +5,7 @@ import GameLoop from '../common/engine/GameLoop';
 import NetworkComponent from '../common/components/network';
 import MapComponent from '../common/components/map';
 
-import MapTestSystem from './map/map.system.test';
+import MapSystem from './features/map/map.system';
 import PhysicsSystem from './features/physics/physics.system.new';
 
 import ServerNetworkManager from './serverNetworkManager';
@@ -13,8 +13,7 @@ import generatePlayer from './features/physics/player.generator';
 
 import { loadMap } from './map/map.utils';
 
-import './features/physics/box2d.manager';
-import { PLAYER_WIDTH, PLAYER_HEIGHT } from '../common/constants';
+import './features/physics/matter.manager';
 
 const serverGameLoop = new GameLoop(30);
 
@@ -47,13 +46,13 @@ class Game {
     this.ecs = new ECS();
 
     const physicsSystem = new PhysicsSystem();
-    const mapTestSystem = new MapTestSystem();
+    const mapTestSystem = new MapSystem();
 
     this.ecs.addSystem(mapTestSystem);
     this.ecs.addSystem(physicsSystem);
 
     this.players.forEach((player, index) => {
-      const newEntity = generatePlayer(40 * index, 40 * index, 16, 16, player.id);
+      const newEntity = generatePlayer(40 * index + 200, 40 * index, 16, 16, player.id);
 
       this.ecs.addEntity(newEntity);
     });
@@ -71,6 +70,8 @@ class Game {
       new MapComponent(number, map),
       new NetworkComponent(444),
     ]));
+
+    mapTestSystem.buildMap({ map });
 
     this.players.forEach(({ socket }) => {
       socket.emit('MAP_LOAD', {

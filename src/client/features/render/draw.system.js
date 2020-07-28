@@ -3,7 +3,7 @@ import * as PIXI from 'pixi.js';
 
 import PixiManager from './pixi.manager';
 
-import { PIXEL_PER_METER, GAME_SCALE } from '../../../common/constants';
+import { GAME_SCALE } from '../../../common/constants';
 
 class DrawSystem extends EcsSystem {
   constructor() {
@@ -19,7 +19,7 @@ class DrawSystem extends EcsSystem {
       PixiManager.stage.addChild(sprite);
       PixiManager.graphics = new PIXI.Graphics();
 
-      // PixiManager.stage.addChild(PixiManager.graphics);
+      PixiManager.stage.addChild(PixiManager.graphics);
     });
 
     document.querySelector('#canvas').appendChild(PixiManager.renderer.view);
@@ -51,16 +51,6 @@ class DrawSystem extends EcsSystem {
       } else {
         animationComponent.play('IDLE');
       }
-
-      const { debug } = serverPhysicsComponent;
-
-      const points = debug.vertices.map(({x, y}) => ([x, y])).flat();
-      if (!points) {
-        return;
-      }
-      PixiManager.graphics.beginFill(0xffff22);
-      PixiManager.graphics.drawPolygon(points);
-      PixiManager.graphics.endFill();
     });
   }
 

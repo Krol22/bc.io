@@ -1,7 +1,7 @@
 import { EcsSystem } from '@krol22/ecs';
 import { Body } from 'matter-js';
 
-import Box2DManager from './box2d.manager';
+import Box2DManager from './matter.manager';
 
 import { PLAYER_SPEED } from '../../../common/constants';
 
@@ -78,11 +78,6 @@ export default class PhysicsSystem extends EcsSystem {
 
       physics.vx = entityBody.velocity.x;
       physics.vy = entityBody.velocity.y;
-
-      physics.debug = {
-        render: entityBody.render,
-        vertices: entityBody.vertices.map(({ x, y }) => ({ x, y })),
-      }
     });
   }
 }
