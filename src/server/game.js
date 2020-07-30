@@ -13,7 +13,7 @@ import generatePlayer from './features/physics/player.generator';
 
 import { loadMap } from './map/map.utils';
 
-import './features/physics/matter.manager';
+import MatterManager from './features/physics/matter.manager';
 
 const serverGameLoop = new GameLoop(30);
 
@@ -43,6 +43,7 @@ class Game {
 
   startGame() {
     this.state = GAME_STATES.PLAY;
+    MatterManager.initialize();
     this.ecs = new ECS();
 
     const physicsSystem = new PhysicsSystem();
@@ -51,8 +52,16 @@ class Game {
     this.ecs.addSystem(mapTestSystem);
     this.ecs.addSystem(physicsSystem);
 
+    const { number, map } = loadMap('map01');
+
+    const spawnPoints = map.filter(({ type }) => type === 'SPAWN');
+
     this.players.forEach((player, index) => {
-      const newEntity = generatePlayer(40 * index + 200, 40 * index, 16, 16, player.id);
+      if (!spawnPoints[index]) {
+        console.error(`Not enough spawn points - player ${player.id} not spawned`);
+        return;
+      }
+      const newEntity = generatePlayer(spawnPoints[index].x * 16, spawnPoints[index].y * 16, 16, 16, player.id);
 
       this.ecs.addEntity(newEntity);
     });
@@ -63,8 +72,6 @@ class Game {
     this.players.forEach(({ socket }) => {
       socket.emit('GAME_STARTED');
     });
-
-    const { number, map } = loadMap('map01');
   
     this.ecs.addEntity(new EcsEntity([
       new MapComponent(number, map),

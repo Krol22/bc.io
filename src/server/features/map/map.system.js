@@ -15,7 +15,7 @@ export default class MapSystem extends EcsSystem {
     const { map } = mapData;
 
     map.forEach(({x, y, type}) => {
-      if (type === 'GRASS' || type === 'ICE') {
+      if (type === 'GRASS' || type === 'ICE' || type === 'SPAWN') {
         return;
       }
 

@@ -11,6 +11,8 @@ class DrawSystem extends EcsSystem {
   }
 
   initializePixi() {
+    PixiManager.initialize();
+
     this.systemEntities.forEach(entity => {
       const drawComponent = entity.getComponent('DRAW');
 

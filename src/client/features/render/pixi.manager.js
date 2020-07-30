@@ -12,7 +12,7 @@ const PixiManager = {
 
   render: () => {
     PixiManager.renderer.render(PixiManager.stage);
-  }
+  },
 };
 
 PixiManager.initialize();

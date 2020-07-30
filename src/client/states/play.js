@@ -21,7 +21,6 @@ const UP = 38;
 const RIGHT = 39;
 const DOWN = 40;
 
-const clientGameLoop = new GameLoop(60);
 
 class PlayState extends HTMLElement {
   constructor() {
@@ -56,6 +55,7 @@ class PlayState extends HTMLElement {
 
     drawSystem.initializePixi(); 
 
+    this.clientGameLoop = new GameLoop(60);
     this.onStart();
   }
 
@@ -65,6 +65,7 @@ class PlayState extends HTMLElement {
     this.networkManager.removeEventListener('GAME_ENDED', this.onGameEnded);
     this.networkManager.removeEventListener('GAME_TICK', this.onGameTick);
 
+    this.onEnd();
   }
 
   onStart() {
@@ -86,7 +87,7 @@ class PlayState extends HTMLElement {
   }
 
   onGameStarted() {
-    clientGameLoop.start(this.update);
+    this.clientGameLoop.start(this.update);
   }
 
   onGameEnded() {
@@ -116,7 +117,7 @@ class PlayState extends HTMLElement {
   }
 
   onEnd() {
-
+    this.clientGameLoop.stop();
   }
 
   update() {
