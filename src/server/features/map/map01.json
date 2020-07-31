@@ -1,5 +1,9 @@
 {
   "number": 1,
+  "meta": {
+    "width": 14,
+    "height": 14
+  },
   "map": [
     {"x": 2, "y": 0, "type": "BLOCK"},
     {"x": 5, "y": 0, "type": "BLOCK"},
