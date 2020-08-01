@@ -21,7 +21,6 @@ const UP = 38;
 const RIGHT = 39;
 const DOWN = 40;
 
-
 class PlayState extends HTMLElement {
   constructor() {
     super();
@@ -56,6 +55,13 @@ class PlayState extends HTMLElement {
     drawSystem.initializePixi(); 
 
     this.clientGameLoop = new GameLoop(60);
+
+    const matterCheckbox = document.querySelector('#matter_show');
+
+    matterCheckbox.addEventListener('change', () => {
+      this.debug = matterCheckbox.checked;
+    });
+
     this.onStart();
   }
 
@@ -104,7 +110,7 @@ class PlayState extends HTMLElement {
       } 
     });
 
-    if (!process.env.DEBUG) {
+    if (!this.debug) {
       return;
     }
 
@@ -143,7 +149,13 @@ class PlayState extends HTMLElement {
   render() {
     return `
       <section class="play">
-        <h3>Press SPACE to end game</h3>
+        <h3 class="">Press SPACE to end game</h3>
+        <div>
+          <label>
+            <input id="matter_show" type="checkbox" class="nes-checkbox" />
+            <span>Show matter body</span>
+          </label>
+        </div>
         <div class="canvas" id="canvas"></div>
       </section>
     `;
