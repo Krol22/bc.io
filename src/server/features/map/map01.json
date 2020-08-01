@@ -99,6 +99,7 @@
     {"x": 6, "y": 12, "type": "BLOCK"},
     {"x": 7, "y": 12, "type": "BLOCK"},
     {"x": 12, "y": 12, "type": "BLOCK"},
+    {"x": 11, "y": 12, "type": "ICE"},
 
     {"x": 5, "y": 13, "type": "BLOCK"},
     {"x": 7, "y": 13, "type": "BLOCK"},

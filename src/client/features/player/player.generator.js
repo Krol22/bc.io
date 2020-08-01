@@ -42,6 +42,7 @@ const generatePlayer = (networkId) => {
   const networkComponent = new NetworkComponent(networkId);
   const drawComponent = new DrawComponent(0, 0,
     new PIXI.Texture(spriteSheet, new PIXI.Rectangle(0 * FRAME_WIDTH, 0 * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT)),
+    1,
   );
 
   return new EcsEntity([

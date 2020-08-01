@@ -38,7 +38,12 @@ class MapSystem extends EcsSystem {
 
           mapSprite.scale.set(GAME_SCALE, GAME_SCALE);
 
-          PixiManager.stage.addChild(mapSprite);
+          if (type === 'GRASS') {
+            PixiManager.layers['FOREST'].addChild(mapSprite);
+            return;
+          }
+
+          PixiManager.layers['TERRAIN'].addChild(mapSprite);
         });
     });
   }
