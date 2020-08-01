@@ -11,15 +11,17 @@ class DrawSystem extends EcsSystem {
   }
 
   initializePixi() {
+    PixiManager.initialize();
+
     this.systemEntities.forEach(entity => {
       const drawComponent = entity.getComponent('DRAW');
 
       const { sprite } = drawComponent;
 
-      PixiManager.stage.addChild(sprite);
       PixiManager.graphics = new PIXI.Graphics();
 
-      PixiManager.stage.addChild(PixiManager.graphics);
+      PixiManager.layers['TANK'].addChild(sprite);
+      PixiManager.layers['TANK'].addChild(PixiManager.graphics);
     });
 
     document.querySelector('#canvas').appendChild(PixiManager.renderer.view);

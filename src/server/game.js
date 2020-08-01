@@ -6,14 +6,14 @@ import NetworkComponent from '../common/components/network';
 import MapComponent from '../common/components/map';
 
 import MapSystem from './features/map/map.system';
-import PhysicsSystem from './features/physics/physics.system.new';
+import PhysicsSystem from './features/physics/physics.system';
 
 import ServerNetworkManager from './serverNetworkManager';
 import generatePlayer from './features/physics/player.generator';
 
-import { loadMap } from './map/map.utils';
+import { loadMap } from './features/map/map.utils';
 
-import './features/physics/matter.manager';
+import MatterManager from './features/physics/matter.manager';
 
 const serverGameLoop = new GameLoop(30);
 
@@ -43,6 +43,7 @@ class Game {
 
   startGame() {
     this.state = GAME_STATES.PLAY;
+    MatterManager.initialize();
     this.ecs = new ECS();
 
     const physicsSystem = new PhysicsSystem();
@@ -51,8 +52,16 @@ class Game {
     this.ecs.addSystem(mapTestSystem);
     this.ecs.addSystem(physicsSystem);
 
-    this.players.forEach((player, index) => {
-      const newEntity = generatePlayer(40 * index + 200, 40 * index, 16, 16, player.id);
+    const { number, map, meta } = loadMap('map01');
+
+    const spawnPoints = map.filter(({ type }) => type === 'SPAWN');
+
+    this.players.forEach(player => {
+      // if (!spawnPoints[index]) {
+        // console.error(`Not enough spawn points - player ${player.id} not spawned`);
+        // return;
+      // }
+      const newEntity = generatePlayer(spawnPoints[0].x * 16, spawnPoints[0].y * 16, 16, 16, player.id);
 
       this.ecs.addEntity(newEntity);
     });
@@ -63,19 +72,17 @@ class Game {
     this.players.forEach(({ socket }) => {
       socket.emit('GAME_STARTED');
     });
-
-    const { number, map } = loadMap('map01');
   
     this.ecs.addEntity(new EcsEntity([
-      new MapComponent(number, map),
+      new MapComponent(number, map, meta),
       new NetworkComponent(444),
     ]));
 
-    mapTestSystem.buildMap({ map });
+    mapTestSystem.buildMap({ map, meta });
 
     this.players.forEach(({ socket }) => {
       socket.emit('MAP_LOAD', {
-        number, map, networkId: 444,
+        number, map, meta, networkId: 444,
       });
     });
   }

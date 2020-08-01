@@ -26,18 +26,25 @@ class MapSystem extends EcsSystem {
 
       const { map } = mapEntity.getComponent('MAP');
 
-      map.forEach(({ x, y, type }) => {
-        const texture = new PIXI.Texture(spriteSheet, mapElements[type]);
+      map
+        .filter(({ type }) => type !== 'SPAWN')
+        .forEach(({ x, y, type }) => {
+          const texture = new PIXI.Texture(spriteSheet, mapElements[type]);
 
-        const mapSprite = new PIXI.Sprite(texture);
+          const mapSprite = new PIXI.Sprite(texture);
 
-        mapSprite.x = x * FRAME_WIDTH * GAME_SCALE;
-        mapSprite.y = y * FRAME_WIDTH * GAME_SCALE;
+          mapSprite.x = x * FRAME_WIDTH * GAME_SCALE;
+          mapSprite.y = y * FRAME_WIDTH * GAME_SCALE;
 
-        mapSprite.scale.set(GAME_SCALE, GAME_SCALE);
+          mapSprite.scale.set(GAME_SCALE, GAME_SCALE);
 
-        PixiManager.stage.addChild(mapSprite);
-      });
+          if (type === 'GRASS') {
+            PixiManager.layers['FOREST'].addChild(mapSprite);
+            return;
+          }
+
+          PixiManager.layers['TERRAIN'].addChild(mapSprite);
+        });
     });
   }
 

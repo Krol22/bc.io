@@ -1,0 +1,109 @@
+{
+  "number": 1,
+  "meta": {
+    "width": 14,
+    "height": 14
+  },
+  "map": [
+    {"x": 2, "y": 0, "type": "BLOCK"},
+    {"x": 5, "y": 0, "type": "BLOCK"},
+    {"x": 9, "y": 0, "type": "BLOCK"},
+
+    {"x": 0, "y": 1, "type": "GRASS"},
+    {"x": 1, "y": 1, "type": "BLOCK"},
+    {"x": 2, "y": 1, "type": "BLOCK"},
+    {"x": 3, "y": 1, "type": "BLOCK"},
+    {"x": 5, "y": 1, "type": "BLOCK"},
+    {"x": 7, "y": 1, "type": "METAL"},
+    {"x": 9, "y": 1, "type": "BLOCK"},
+
+    {"x": 0, "y": 2, "type": "GRASS"},
+    {"x": 1, "y": 2, "type": "GRASS"},
+    {"x": 2, "y": 2, "type": "GRASS"},
+    {"x": 5, "y": 2, "type": "BLOCK"},
+    {"x": 7, "y": 2, "type": "BLOCK"},
+    {"x": 9, "y": 2, "type": "BLOCK"},
+    {"x": 12, "y": 2, "type": "BLOCK"},
+
+    {"x": 0, "y": 3, "type": "GRASS"},
+    {"x": 1, "y": 3, "type": "WATER"},
+    {"x": 2, "y": 3, "type": "WATER"},
+    {"x": 3, "y": 3, "type": "WATER"},
+    {"x": 4, "y": 3, "type": "WATER"},
+    {"x": 5, "y": 3, "type": "WATER"},
+    {"x": 6, "y": 3, "type": "WATER"},
+    {"x": 7, "y": 3, "type": "WATER"},
+    {"x": 8, "y": 3, "type": "WATER"},
+    {"x": 9, "y": 3, "type": "WATER"},
+    {"x": 10, "y": 3, "type": "WATER"},
+    {"x": 11, "y": 3, "type": "WATER"},
+    {"x": 13, "y": 3, "type": "WATER"},
+
+    {"x": 1, "y": 4, "type": "BLOCK"},
+
+    {"x": 6, "y": 5, "type": "BLOCK"},
+    {"x": 7, "y": 5, "type": "BLOCK"},
+    {"x": 8, "y": 5, "type": "BLOCK"},
+    {"x": 11, "y": 5, "type": "METAL"},
+    {"x": 12, "y": 5, "type": "METAL"},
+    {"x": 13, "y": 5, "type": "METAL"},
+
+    {"x": 0, "y": 6, "type": "BLOCK"},
+    {"x": 3, "y": 6, "type": "BLOCK"},
+    {"x": 6, "y": 6, "type": "BLOCK"},
+    {"x": 7, "y": 6, "type": "BLOCK"},
+    {"x": 8, "y": 6, "type": "BLOCK"},
+    {"x": 9, "y": 6, "type": "GRASS"},
+
+    {"x": 3, "y": 7, "type": "METAL"},
+    {"x": 8, "y": 7, "type": "GRASS"},
+    {"x": 9, "y": 7, "type": "GRASS"},
+    {"x": 10, "y": 7, "type": "GRASS"},
+    {"x": 11, "y": 7, "type": "GRASS"},
+    {"x": 12, "y": 7, "type": "METAL"},
+    {"x": 12, "y": 7, "type": "BLOCK"},
+
+    {"x": 0, "y": 8, "type": "WATER"},
+    {"x": 1, "y": 8, "type": "WATER"},
+    {"x": 3, "y": 8, "type": "WATER"},
+    {"x": 4, "y": 8, "type": "WATER"},
+    {"x": 5, "y": 8, "type": "WATER"},
+    {"x": 6, "y": 8, "type": "WATER"},
+    {"x": 7, "y": 8, "type": "WATER"},
+    {"x": 8, "y": 8, "type": "WATER"},
+    {"x": 10, "y": 8, "type": "WATER"},
+    {"x": 11, "y": 8, "type": "WATER"},
+    {"x": 12, "y": 8, "type": "WATER"},
+    {"x": 13, "y": 8, "type": "WATER"},
+
+    {"x": 0, "y": 9, "type": "GRASS"},
+    {"x": 1, "y": 9, "type": "GRASS"},
+    {"x": 7, "y": 9, "type": "BLOCK"},
+    {"x": 9, "y": 9, "type": "BLOCK"},
+
+    {"x": 0, "y": 10, "type": "GRASS"},
+    {"x": 1, "y": 10, "type": "GRASS"},
+    {"x": 2, "y": 10, "type": "BLOCK"},
+    {"x": 7, "y": 10, "type": "BLOCK"},
+    {"x": 12, "y": 10, "type": "BLOCK"},
+
+    {"x": 0, "y": 11, "type": "GRASS"},
+    {"x": 2, "y": 11, "type": "BLOCK"},
+    {"x": 10, "y": 11, "type": "METAL"},
+    {"x": 11, "y": 11, "type": "BLOCK"},
+    {"x": 12, "y": 11, "type": "BLOCK"},
+
+    {"x": 1, "y": 12, "type": "METAL"},
+    {"x": 2, "y": 12, "type": "BLOCK"},
+    {"x": 5, "y": 12, "type": "BLOCK"},
+    {"x": 6, "y": 12, "type": "BLOCK"},
+    {"x": 7, "y": 12, "type": "BLOCK"},
+    {"x": 12, "y": 12, "type": "BLOCK"},
+    {"x": 11, "y": 12, "type": "ICE"},
+
+    {"x": 5, "y": 13, "type": "BLOCK"},
+    {"x": 7, "y": 13, "type": "BLOCK"},
+
+    {"x": 1, "y": 13, "type": "SPAWN"}
+  ]
+}

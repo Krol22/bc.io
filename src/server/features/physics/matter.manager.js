@@ -19,36 +19,44 @@ const getAngle = (p1, p2) => {
   return Math.atan2(p2.y - p1.y, p2.x - p1.x);
 };
 
+/*
+  Handler for directional friction:
+  adds different friction when pushing player tank in Y axis than when pushing player in X axis. 
+*/
+const handleDirectionalFriction = () => {
+  MatterJsManager.engine.world.bodies.forEach(body => {
+    const currentVelocity = body.velocity;
+    const direction = mapToDirection(body.direction);
+
+    let angle = getAngle(currentVelocity, direction);
+
+    if (body.direction === 0 || body.direction === 2) {
+      angle += Math.PI / 2;
+    }
+
+    if (Math.abs(body.speed) < 0.001) {
+      return;
+    }
+
+    if (angle !== Math.PI / 2 || angle !== -Math.PI / 2) {
+      if (direction.x !== 0 && Math.abs(currentVelocity.y) > 0.5) {
+        Body.applyForce(body, body.position, { x: 0, y: -Math.sign(currentVelocity.y) * 0.001 });
+      }
+
+      if (direction.y !== 0 && Math.abs(currentVelocity.x) > 0.5) {
+        Body.applyForce(body, body.position, { x: -Math.sign(currentVelocity.x) * 0.001, y: 0 });
+      }
+    }
+  });
+};
+
 const MatterJsManager = {
   initialize: () => {
     MatterJsManager.engine = Engine.create();
     MatterJsManager.engine.world.gravity.y = 0;
 
     Events.on(MatterJsManager.engine, 'beforeUpdate', () => {
-      MatterJsManager.engine.world.bodies.forEach(body => {
-        const currentVelocity = body.velocity;
-        const direction = mapToDirection(body.direction);
-
-        let angle = getAngle(currentVelocity, direction);
-
-        if (body.direction === 0 || body.direction === 2) {
-          angle += Math.PI / 2;
-        }
-
-        if (Math.abs(body.speed) < 0.001) {
-          return;
-        }
-
-        if (angle !== Math.PI / 2 || angle !== -Math.PI / 2) {
-          if (direction.x !== 0 && Math.abs(currentVelocity.y) > 0.5) {
-            Body.applyForce(body, body.position, { x: 0, y: -Math.sign(currentVelocity.y) * 0.001 });
-          }
-
-          if (direction.y !== 0 && Math.abs(currentVelocity.x) > 0.5) {
-            Body.applyForce(body, body.position, { x: -Math.sign(currentVelocity.x) * 0.001, y: 0 });
-          }
-        }
-      });
+      handleDirectionalFriction();  
     });
   },
 
