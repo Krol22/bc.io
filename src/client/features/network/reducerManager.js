@@ -15,15 +15,16 @@ class ReducerManager {
     * @constructor
     * @param {object} networkManager - game networkManager,
     * @param {object} ecs - game ECS engine,
+    * @param {array} skipEvents - Array of events that will be skipped by reducerManager
     */
-  constructor(networkManager, ecs) {
+  constructor(networkManager, ecs, skipEvents) {
     this.networkManager = networkManager;
     this.ecs = ecs;
 
     Object
       .keys(networkEvents)
       .forEach(event => {
-        if (event === 'GAME_TICK') { return; }
+        if (skipEvents.includes(event)) { return; }
         this.networkManager.addEventListener(event, this._applyToReducer.bind(this, event)); 
       });
   }

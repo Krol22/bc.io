@@ -1,9 +1,11 @@
 import * as PIXI from 'pixi.js';
 
+import { TERRAIN, TANK, FOREST } from '../../../common/constants/renderLayers';
+
 const GROUPS = {
-  TERRAIN: 0,
-  TANK: 1,
-  FOREST: 2,
+  [TERRAIN]: 0,
+  [TANK]: 1,
+  [FOREST]: 2,
 };
 
 const PixiManager = {

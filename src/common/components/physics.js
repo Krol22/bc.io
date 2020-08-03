@@ -6,32 +6,6 @@ class PhysicsComponent extends EcsComponent {
 
     this.body = body;
   }
-
-  toString() {
-    const physicsComponent = {
-      x: this.body.GetPosition().get_x(),
-      y: this.body.GetPosition().get_y(),
-      angle: this.body.GetAngle(),
-      ...this,
-    };
-
-    delete physicsComponent.body;
-
-    return JSON.stringify(physicsComponent);
-  }
 }
-
-PhysicsComponent.prototype.toString = () => {
-  const physicsComponent = {
-    x: this.body.GetPosition().get_x(),
-    y: this.body.GetPosition().get_y(),
-    angle: this.body.GetAngle(),
-    ...this,
-  };
-
-  delete physicsComponent.body;
-
-  return JSON.stringify(physicsComponent);
-};
 
 module.exports = PhysicsComponent;

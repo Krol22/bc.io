@@ -41,7 +41,6 @@ class PlayState extends HTMLElement {
     this.ecs.addSystem(drawSystem);
     this.ecs.addSystem(new AnimationSystem());
     this.ecs.addSystem(mapSystem);
-    // this.ecs.addSystem(new MapSystem());
 
     window.players.forEach(player => this.ecs.addEntity(generatePlayer(player.id)));
 
@@ -79,7 +78,7 @@ class PlayState extends HTMLElement {
     this.networkManager.addEventListener('GAME_ENDED', this.onGameEnded.bind(this));
     this.networkManager.addEventListener('GAME_TICK', this.onGameTick.bind(this));
 
-    this.reducerManager = new ReducerManager(this.networkManager, this.ecs); 
+    this.reducerManager = new ReducerManager(this.networkManager, this.ecs, ['GAME_TICK']); 
   }
 
   onPlayerLeft({ id }) {

@@ -3,13 +3,17 @@ import { Body } from 'matter-js';
 
 import Box2DManager from './matter.manager';
 
-import { PLAYER_SPEED, FRAME_WIDTH, FRAME_HEIGHT } from '../../../common/constants';
-
-// TODO: move to constants
-const correctionDifference = 0.25;
-
-const MAX_PLAYER_VELOCITY_X = 0.54;
-const MAX_PLAYER_VELOCITY_Y = 0.54;
+import { 
+  PLAYER_SPEED,
+  PLAYER_WIDTH,
+  PLAYER_HEIGHT,
+  FRAME_WIDTH,
+  FRAME_HEIGHT,
+  PLAYER_MOVEMENT_CORRECTION_DIFFERENCE,
+  PLAYER_MAX_VELOCITY_X,
+  PLAYER_MAX_VELOCITY_Y,
+  PLAYER_FRICTION_AIR,
+} from '../../../common/constants';
 
 /*
   Corrects player position for easier movement. 
@@ -24,31 +28,31 @@ const correctPosition = entityBody => {
     return;
   }
 
-  if (restX > 0 && restX < correctionDifference) {
+  if (restX > 0 && restX < PLAYER_MOVEMENT_CORRECTION_DIFFERENCE) {
     Body.setPosition(
       entityBody,
-      { x: (Math.floor(entityBody.position.x / FRAME_WIDTH) + 0.5) * FRAME_WIDTH, y: entityBody.position.y },
+      { x: (Math.floor(entityBody.position.x / FRAME_WIDTH) + PLAYER_WIDTH / 2) * FRAME_WIDTH, y: entityBody.position.y },
     );
   }
 
-  if (restX < 1 && restX > 1 - correctionDifference) {
+  if (restX < 1 && restX > 1 - PLAYER_MOVEMENT_CORRECTION_DIFFERENCE) {
     Body.setPosition(
       entityBody,
-      { x: (Math.ceil(entityBody.position.x / FRAME_WIDTH) - 0.5) * FRAME_WIDTH, y: entityBody.position.y },
+      { x: (Math.ceil(entityBody.position.x / FRAME_WIDTH) - PLAYER_WIDTH / 2) * FRAME_WIDTH, y: entityBody.position.y },
     );
   }
 
-  if (restY > 0 && restY < correctionDifference) {
+  if (restY > 0 && restY < PLAYER_MOVEMENT_CORRECTION_DIFFERENCE) {
     Body.setPosition(
       entityBody,
-      { y: (Math.floor(entityBody.position.y / FRAME_HEIGHT) + 0.5) * FRAME_HEIGHT, x: entityBody.position.x },
+      { y: (Math.floor(entityBody.position.y / FRAME_HEIGHT) + PLAYER_HEIGHT / 2) * FRAME_HEIGHT, x: entityBody.position.x },
     );
   }
 
-  if (restY < 1 && restY > 1 - correctionDifference) {
+  if (restY < 1 && restY > 1 - PLAYER_MOVEMENT_CORRECTION_DIFFERENCE) {
     Body.setPosition(
       entityBody,
-      { y: (Math.ceil(entityBody.position.y / FRAME_HEIGHT) - 0.5) * FRAME_HEIGHT, x: entityBody.position.x },
+      { y: (Math.ceil(entityBody.position.y / FRAME_HEIGHT) - PLAYER_HEIGHT / 2) * FRAME_HEIGHT, x: entityBody.position.x },
     );
   }
 };
@@ -56,17 +60,17 @@ const correctPosition = entityBody => {
 const clampVelocity = playerBody => {
   const currentVelocity = playerBody.velocity;
 
-  if (Math.abs(currentVelocity.x) > MAX_PLAYER_VELOCITY_X) {
+  if (Math.abs(currentVelocity.x) > PLAYER_MAX_VELOCITY_X) {
     Body.setVelocity(
       playerBody,
-      { x: Math.sign(currentVelocity.x) * MAX_PLAYER_VELOCITY_X, y: currentVelocity.y },
+      { x: Math.sign(currentVelocity.x) * PLAYER_MAX_VELOCITY_X, y: currentVelocity.y },
     );
   }
 
-  if (Math.abs(currentVelocity.y) > MAX_PLAYER_VELOCITY_Y) {
+  if (Math.abs(currentVelocity.y) > PLAYER_MAX_VELOCITY_Y) {
     Body.setVelocity(
       playerBody,
-      { x: currentVelocity.x, y: Math.sign(currentVelocity.y) * MAX_PLAYER_VELOCITY_Y },
+      { x: currentVelocity.x, y: Math.sign(currentVelocity.y) * PLAYER_MAX_VELOCITY_Y },
     );
   }
 };
@@ -81,7 +85,7 @@ export default class PhysicsSystem extends EcsSystem {
         const entityBody = Box2DManager.engine.world.bodies.find(({ id }) => id === physics.body); 
 
         Body.set(entityBody, {
-          frictionAir: 0.2,
+          frictionAir: PLAYER_FRICTION_AIR,
         });
         entityBody.direction = 0;
         Body.setVelocity(entityBody, { x: 0, y: 0 });
@@ -98,7 +102,7 @@ export default class PhysicsSystem extends EcsSystem {
         const entityBody = Box2DManager.engine.world.bodies.find(({ id }) => id === physics.body); 
 
         Body.set(entityBody, {
-          frictionAir: 0.2,
+          frictionAir: PLAYER_FRICTION_AIR,
         });
         Body.setVelocity(entityBody, { x: 0, y: 0 });
         Body.applyForce(entityBody, entityBody.position, { x: 0, y: PLAYER_SPEED });
@@ -115,7 +119,7 @@ export default class PhysicsSystem extends EcsSystem {
         const entityBody = Box2DManager.engine.world.bodies.find(({ id }) => id === physics.body); 
 
         Body.set(entityBody, {
-          frictionAir: 0.2,
+          frictionAir: PLAYER_FRICTION_AIR,
         });
         Body.setVelocity(entityBody, { x: 0, y: 0 });
         Body.applyForce(entityBody, entityBody.position, { x: -PLAYER_SPEED, y: 0 });
@@ -132,7 +136,7 @@ export default class PhysicsSystem extends EcsSystem {
         const entityBody = Box2DManager.engine.world.bodies.find(({ id }) => id === physics.body); 
 
         Body.set(entityBody, {
-          frictionAir: 0.2,
+          frictionAir: PLAYER_FRICTION_AIR,
         });
         Body.setVelocity(entityBody, { x: 0, y: 0 });
         Body.applyForce(entityBody, entityBody.position, { x: PLAYER_SPEED, y: 0 });

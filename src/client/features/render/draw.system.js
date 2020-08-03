@@ -4,6 +4,7 @@ import * as PIXI from 'pixi.js';
 import PixiManager from './pixi.manager';
 
 import { GAME_SCALE } from '../../../common/constants';
+import { TANK } from '../../../common/constants/renderLayers';
 
 class DrawSystem extends EcsSystem {
   constructor() {
@@ -20,8 +21,8 @@ class DrawSystem extends EcsSystem {
 
       PixiManager.graphics = new PIXI.Graphics();
 
-      PixiManager.layers['TANK'].addChild(sprite);
-      PixiManager.layers['TANK'].addChild(PixiManager.graphics);
+      PixiManager.layers[TANK].addChild(sprite);
+      PixiManager.layers[TANK].addChild(PixiManager.graphics);
     });
 
     document.querySelector('#canvas').appendChild(PixiManager.renderer.view);

@@ -3,6 +3,7 @@ import { Bodies, World } from 'matter-js';
 
 import MatterManager from '../physics/matter.manager';
 import { FRAME_WIDTH, FRAME_HEIGHT } from '../../../common/constants';
+import { TREES, ICE, SPAWN } from '../../../common/constants/mapTypes';
 
 export default class MapSystem extends EcsSystem {
   constructor() {
@@ -15,7 +16,7 @@ export default class MapSystem extends EcsSystem {
     const { map, meta } = mapData;
 
     map.forEach(({x, y, type}) => {
-      if (type === 'GRASS' || type === 'ICE' || type === 'SPAWN') {
+      if (type === TREES || type === ICE || type === SPAWN) {
         return;
       }
 
@@ -29,6 +30,7 @@ export default class MapSystem extends EcsSystem {
 
     const { width, height } = meta;
 
+    // Add world bounds.
     World.add(MatterManager.engine.world, [
       Bodies.rectangle( // TOP
         FRAME_WIDTH / 2 * width,
