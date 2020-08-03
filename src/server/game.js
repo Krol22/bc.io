@@ -3,78 +3,102 @@ import { ECS, EcsEntity } from '@krol22/ecs';
 import GameLoop from '../common/engine/GameLoop';
 
 import NetworkComponent from '../common/components/network';
-import PhysicsComponent from '../common/components/physics';
+import MapComponent from '../common/components/map';
 
-import PhysicsSystem from './systems/physicsSystem';
+import MapSystem from './features/map/map.system';
+import PhysicsSystem from './features/physics/physics.system';
+
 import ServerNetworkManager from './serverNetworkManager';
+import generatePlayer from './features/physics/player.generator';
+
+import { loadMap } from './features/map/map.utils';
+
+import MatterManager from './features/physics/matter.manager';
+
+const serverGameLoop = new GameLoop(30);
 
 const GAME_STATES = {
   LOBBY: 'LOBBY',
   PLAY: 'PLAY',
 };
 
-const serverGameLoop = new GameLoop(30);
-
 class Game {
   constructor() {
-    this.entities = [];
     this.players = [];
-    this.networkEntities = [];
-
-    this.state = GAME_STATES.LOBBY;
-
-    this.ecs = new ECS();
+    this.serverNetworkManager = new ServerNetworkManager(
+      this.startGame.bind(this),
+      this.endGame.bind(this),
+    );
   }
 
   addPlayer(newPlayer) {
-    this.serverNetworkManager.addPlayer(newPlayer);
     this.players.push(newPlayer);
+    this.serverNetworkManager.onPlayerAdded(newPlayer);
   }
-
-  restartGame() {}
 
   removePlayer(playerId) {
     this.players = [...this.players.filter(({ id }) => playerId !== id)];
+    this.serverNetworkManager.onPlayerRemoved(playerId);
   }
 
-  loop() {
-    this.ecs.update();
-    this.serverNetworkManager.sendClientInfo();
-  }
-
-  start() {
+  startGame() {
     this.state = GAME_STATES.PLAY;
-
-    console.log('gameStart');
-
+    MatterManager.initialize();
     this.ecs = new ECS();
 
     const physicsSystem = new PhysicsSystem();
+    const mapTestSystem = new MapSystem();
+
+    this.ecs.addSystem(mapTestSystem);
     this.ecs.addSystem(physicsSystem);
 
+    const { number, map, meta } = loadMap('map01');
+
+    const spawnPoints = map.filter(({ type }) => type === 'SPAWN');
+
     this.players.forEach(player => {
-      const newEntity = new EcsEntity([
-        new PhysicsComponent(33 * this.players.length, 0),
-        new NetworkComponent(player.id)
-      ]);
+      // if (!spawnPoints[index]) {
+        // console.error(`Not enough spawn points - player ${player.id} not spawned`);
+        // return;
+      // }
+      const newEntity = generatePlayer(spawnPoints[0].x * 16, spawnPoints[0].y * 16, 16, 16, player.id);
 
       this.ecs.addEntity(newEntity);
     });
 
-    this.serverNetworkManager = new ServerNetworkManager(
-      this.ecs.__getEntities(),
-      [physicsSystem],
-      this
-    );
-
-    this.serverNetworkManager.startGame();
+    this.serverNetworkManager.setEcs(this.ecs);
     this.loopId = serverGameLoop.start(this.loop.bind(this));
+
+    this.players.forEach(({ socket }) => {
+      socket.emit('GAME_STARTED');
+    });
+  
+    this.ecs.addEntity(new EcsEntity([
+      new MapComponent(number, map, meta),
+      new NetworkComponent(444),
+    ]));
+
+    mapTestSystem.buildMap({ map, meta });
+
+    this.players.forEach(({ socket }) => {
+      socket.emit('MAP_LOAD', {
+        number, map, meta, networkId: 444,
+      });
+    });
   }
 
-  end() {
+  endGame() {
     this.state = GAME_STATES.LOBBY;
-    this.serverNetworkManager.endGame();
     serverGameLoop.stop(this.loopId);
+
+    this.players.forEach(({ socket }) => {
+      socket.emit('GAME_ENDED');
+    });
+  }
+
+  loop() {
+    this.ecs.update();
+    this.serverNetworkManager.sendClientInfo(this.players);
   }
 }
 

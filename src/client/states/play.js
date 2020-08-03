@@ -1,23 +1,25 @@
-import { ECS, EcsEntity } from '@krol22/ecs';
+import { ECS } from '@krol22/ecs';
 
 import InputManager from '../inputManager';
-import NetworkManager from '../networkManager';
+import NetworkManager from '../features/network/networkManager';
+import ReducerManager from '../features/network/reducerManager';
 
 import GameLoop from '../../common/engine/GameLoop';
 
-import DrawSystem from '../systems/draw';
+import DrawSystem from '../features/render/draw.system';
+import MapSystem from '../features/map/map.system';
+import AnimationSystem from '../features/render/animation.system';
 
-import DrawComponent from '../../common/components/draw';
-import NetworkComponent from '../../common/components/network';
+import PixiManager from '../features/render/pixi.manager';
 
-import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } from '../../common/networkActions';
+import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, TEST_DESTROY_MAP } from '../../common/constants/playerActions';
+import { GAME_SCALE } from '../../common/constants';
+import generatePlayer from '../features/player/player.generator';
 
 const LEFT = 37;
 const UP = 38;
 const RIGHT = 39;
 const DOWN = 40;
-
-const clientGameLoop = new GameLoop(60);
 
 class PlayState extends HTMLElement {
   constructor() {
@@ -33,18 +35,14 @@ class PlayState extends HTMLElement {
 
   connectedCallback() {
     this.innerHTML = this.render();
+    const drawSystem = new DrawSystem();
+    const mapSystem = new MapSystem();
 
-    const canvas = document.querySelector('#canvas');
-    this.ecs.addSystem(new DrawSystem(canvas.getContext('2d')));
+    this.ecs.addSystem(drawSystem);
+    this.ecs.addSystem(new AnimationSystem());
+    this.ecs.addSystem(mapSystem);
 
-    window.players.forEach(player => {
-      const newEntity = new EcsEntity([
-        new NetworkComponent(player.id),
-        new DrawComponent(0, 0, 32, 32, window.assets.sprite),
-      ]);
-
-      this.ecs.addEntity(newEntity);
-    });
+    window.players.forEach(player => this.ecs.addEntity(generatePlayer(player.id)));
 
     if (!this.getAttribute('started')) {
       this.networkManager.sendClientEvent('GAME_START', {});
@@ -52,6 +50,16 @@ class PlayState extends HTMLElement {
     } else {
       this.onGameStarted();
     }
+
+    drawSystem.initializePixi(); 
+
+    this.clientGameLoop = new GameLoop(60);
+
+    const matterCheckbox = document.querySelector('#matter_show');
+
+    matterCheckbox.addEventListener('change', () => {
+      this.debug = matterCheckbox.checked;
+    });
 
     this.onStart();
   }
@@ -61,12 +69,16 @@ class PlayState extends HTMLElement {
     this.networkManager.removeEventListener('PLAYER_LEFT', this.onPlayerLeft);
     this.networkManager.removeEventListener('GAME_ENDED', this.onGameEnded);
     this.networkManager.removeEventListener('GAME_TICK', this.onGameTick);
+
+    this.onEnd();
   }
 
   onStart() {
     this.networkManager.addEventListener('PLAYER_LEFT', this.onPlayerLeft.bind(this));
     this.networkManager.addEventListener('GAME_ENDED', this.onGameEnded.bind(this));
     this.networkManager.addEventListener('GAME_TICK', this.onGameTick.bind(this));
+
+    this.reducerManager = new ReducerManager(this.networkManager, this.ecs, ['GAME_TICK']); 
   }
 
   onPlayerLeft({ id }) {
@@ -80,27 +92,37 @@ class PlayState extends HTMLElement {
   }
 
   onGameStarted() {
-    console.log('started');
-    clientGameLoop.start(this.update);
+    this.clientGameLoop.start(this.update);
   }
 
   onGameEnded() {
     const appRoot = document.querySelector('#game-root');
-    appRoot.innerHTML = '<lobby-state from-game="true"></lobby-state>'
+    appRoot.innerHTML = '<lobby-state from-game="true"></lobby-state>';
   }
 
-  onGameTick(serverEntities) {
+  onGameTick({ entities: serverEntities, debug }) {
     const systems = this.ecs.__getSystems();  
-    
+
     systems.forEach(system => {
       if(system.onServerTick) {
         system.onServerTick(serverEntities);
       } 
     });
+
+    if (!this.debug) {
+      return;
+    }
+
+    debug.forEach(({ vertices }) => {
+      const points = vertices.map(({ x, y }) => ([x * GAME_SCALE, y * GAME_SCALE])).flat();
+      PixiManager.graphics.lineStyle(1, 0xFF00FF);
+      PixiManager.graphics.drawPolygon(points);
+      PixiManager.graphics.endFill();
+    });
   }
 
   onEnd() {
-
+    this.clientGameLoop.stop();
   }
 
   update() {
@@ -116,6 +138,8 @@ class PlayState extends HTMLElement {
       this.networkManager.sendClientEvent('CLIENT_EVENT', { event: MOVE_DOWN });
     } else if (this.inputManager.keys[32].isDown) {
       this.networkManager.sendClientEvent('GAME_END');
+    } else if (this.inputManager.keys[65].isDown) {
+      this.networkManager.sendClientEvent('CLIENT_EVENT', { event: TEST_DESTROY_MAP });
     }
 
     this.ecs.update();
@@ -124,13 +148,14 @@ class PlayState extends HTMLElement {
   render() {
     return `
       <section class="play">
-        <h3>Press SPACE to end game</h3>
-        <canvas
-          class="canvas"
-          id="canvas"
-          width="600"
-          height="600">
-        </canvas>
+        <h3 class="">Press SPACE to end game</h3>
+        <div>
+          <label>
+            <input id="matter_show" type="checkbox" class="nes-checkbox" />
+            <span>Show matter body</span>
+          </label>
+        </div>
+        <div class="canvas" id="canvas"></div>
       </section>
     `;
   }

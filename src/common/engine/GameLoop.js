@@ -2,6 +2,7 @@ class GameLoop {
   constructor(frameRate) {
     this.frameRate = frameRate;
     this.time = 0;
+    this.animationFrameId = undefined;
   }
 
   loop(callback) {
@@ -29,10 +30,16 @@ class GameLoop {
       }, 10);
     }
 
-    return this.loop(function tick(elapsed) {
+    this.animationFrameId = this.loop(function tick(elapsed) {
       callback(elapsed);
-      self.loop(tick);
+      if (self.end) {
+        return;
+      }
+
+      self.animationFrameId = self.loop(tick, self.animationFrameId);
     });
+
+    return this.animationFrameId;
   }
 
   stop(id) {
@@ -41,7 +48,9 @@ class GameLoop {
       return;
     }
 
-    window.cancelAnimationFrame(id);
+    this.end = true;
+    window.cancelAnimationFrame(this.animationFrameId);
+    this.animationFrameId = undefined;
   }
 }
 

@@ -1,11 +1,9 @@
-const { EcsComponent } = require('@krol22/ecs');
+import { EcsComponent } from '@krol22/ecs';
 
-class NetworkComponent extends EcsComponent {
+export default class NetworkComponent extends EcsComponent {
   constructor(id) {
     super('NETWORK');
 
-    this.id = id
+    this.id = id;
   }
-};
-
-module.exports = NetworkComponent;
+}

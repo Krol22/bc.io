@@ -1,7 +1,9 @@
+import 'regenerator-runtime';
+
 import express from 'express';
 import socketio from 'socket.io';
 
-import Game from './newGame';
+import Game from './game';
 
 const PORT = process.env.PORT || 3000;
 

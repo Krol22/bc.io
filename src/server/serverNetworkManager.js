@@ -1,64 +1,64 @@
-class ServerNetworkManager {
-  constructor(entities, systems, game) {
-    this.entities = entities;
-    this.systems = systems;
-    this.game = game;
+import MatterManager from './features/physics/matter.manager';
 
+export default class ServerNetworkManager {
+  constructor(onGameStart, onGameEnd) {
     this.players = [];
+
+    this.onGameStart = onGameStart;
+    this.onGameEnd = onGameEnd;
   }
 
-  sendClientInfo() {
-    this.players.forEach(player => {
-      const { socket } = player;
-
-      socket.emit('GAME_TICK', this.entities);
-    });
+  setEcs(ecs) {
+    this.ecs = ecs;
   }
 
-  startGame() {
-    this.players.forEach(({ socket }) => {
-      socket.emit('GAME_STARTED');
-    });
-  }
-
-  endGame() {
-    this.players.forEach(({ socket }) => {
-      socket.emit('GAME_ENDED');  
-    });
-  }
-
-  addPlayer(newPlayer) {
+  onPlayerAdded(newPlayer) {
     const { id, socket } = newPlayer;
 
-    this.players.push(newPlayer);
-
     socket.on('GAME_START', () => {
-      console.log('test23');
-      this.game.start();
+      this.onGameStart();
     });
 
     socket.on('GAME_END', () => {
-      this.game.end();
+      this.onGameEnd();
     });
 
     socket.on('CLIENT_EVENT', (({event}) => {
-      const entity = this.entities.find(entity => entity.getComponent('NETWORK').id === id);
+      const entity = 
+        this.ecs.__getEntities()
+          .find(entity => entity.getComponent('NETWORK').id === id);
 
       if (!entity) {
         return;
       }
 
-      const systemsWithNetworkActions = this.systems.filter(system => {
-        return !!system.networkActions[event];
-      });
+      const systemsWithNetworkActions = 
+        this.ecs.__getSystems().filter(system => {
+          return system.networkActions[event];
+        });
 
       systemsWithNetworkActions.forEach(system => system.networkActions[event](entity));
     }));
   }
 
-  removePlayer(playerId) {
-    this.players = this.players.filter(({ id }) => playerId !== id);
+  onPlayerRemoved() {
+
+  }
+
+  sendClientInfo(players) {
+    players.forEach(player => {
+      const { socket } = player;
+      const debug = [
+        ...MatterManager.engine.world.bodies.map(body => ({ 
+          render: body.render, 
+          vertices: body.vertices.map(({x, y}) => ({ x, y })),
+        })),
+      ];
+
+      socket.emit('GAME_TICK', {
+        entities: this.ecs.__getEntities(),
+        debug,
+      });
+    });
   }
 }
-
-module.exports = ServerNetworkManager;
