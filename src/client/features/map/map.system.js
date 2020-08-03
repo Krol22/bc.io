@@ -6,11 +6,12 @@ import * as PIXI from 'pixi.js';
 
 import { SPAWN, TREES } from '../../../common/constants/mapTypes';
 import { FRAME_WIDTH, FRAME_HEIGHT, GAME_SCALE } from '../../../common/constants';
+import { TERRAIN, FOREST } from '../../../common/constants/renderLayers';
 
 const mapElements = {
   BLOCK: new PIXI.Rectangle(16 * FRAME_WIDTH, 0 * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT),
   WATER: new PIXI.Rectangle(16 * FRAME_WIDTH, 2 * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT),
-  GRASS: new PIXI.Rectangle(17 * FRAME_WIDTH, 2 * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT),
+  TREES: new PIXI.Rectangle(17 * FRAME_WIDTH, 2 * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT),
   METAL: new PIXI.Rectangle(16 * FRAME_WIDTH, 1 * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT),
   ICE: new PIXI.Rectangle(18 * FRAME_WIDTH, 2 * FRAME_HEIGHT, FRAME_WIDTH, FRAME_HEIGHT),
 };
@@ -39,11 +40,11 @@ class MapSystem extends EcsSystem {
           mapSprite.scale.set(GAME_SCALE, GAME_SCALE);
 
           if (type === TREES) {
-            PixiManager.layers['FOREST'].addChild(mapSprite);
+            PixiManager.layers[FOREST].addChild(mapSprite);
             return;
           }
 
-          PixiManager.layers['TERRAIN'].addChild(mapSprite);
+          PixiManager.layers[TERRAIN].addChild(mapSprite);
         });
     });
   }
