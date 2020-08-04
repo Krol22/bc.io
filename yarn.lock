@@ -854,10 +854,10 @@
   resolved "https://registry.yarnpkg.com/@iarna/toml/-/toml-2.2.5.tgz#b32366c89b43c6f8cefbdefac778b9c828e3ba8c"
   integrity sha512-trnsAYxU3xnS1gPHPyU961coFyLkh4gAD/0zQ5mymY4yOZ+CYvsPqUbOFSw0aDM4y0tV7tiFxL/1XfXPNC6IPg==
 
-"@krol22/ecs@^0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@krol22/ecs/-/ecs-0.2.2.tgz#0cfcb77451f2674ae1d3d6a94efc378c75247db5"
-  integrity sha512-3nTQ/k18jCe++1sVh1TKsoLiW/F/HP1syrDkTapyagPXvvliLznkhSBEZpxbyxtnq69ZmtqjsezDRoLlEXVirw==
+"@krol22/ecs@^0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@krol22/ecs/-/ecs-0.2.3.tgz#1308cbd7bf492af2423d5d4cdfc9b760690d44db"
+  integrity sha512-yOxw006FbBwaVR2530WFDQojpZAceVhXOuLdd6cAKnxsPUYjVlSaXflShpbcZKdmgmPf/8C0idwwz0nHcFpawA==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"

@@ -33,7 +33,7 @@ export default class AnimationComponent extends EcsComponent {
     this.animations = animations;
   }
 
-  play(animationName) {
+  play(entity, animationName) {
     if (!this.animations[animationName]) {
       throw new Error(`No animation named ${animationName}!`);
     }
